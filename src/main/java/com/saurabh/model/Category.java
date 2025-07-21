@@ -1,4 +1,3 @@
-odel;
 
 package com.saurabh.model;
 import jakarta.persistence.Column;
@@ -24,6 +23,59 @@ public class Category {
 	
 	@NotNull
 	private Integer level;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(String categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public Category getParentCategory() {
+		return parentCategory;
+	}
+
+	public void setParentCategory(Category parentCategory) {
+		this.parentCategory = parentCategory;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+
+	public Category(Long id, @NotNull String categoryId, Category parentCategory, @NotNull Integer level) {
+		super();
+		this.id = id;
+		this.categoryId = categoryId;
+		this.parentCategory = parentCategory;
+		this.level = level;
+	}
+
+	public Category() {
+		super();
+		
+	}
+
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", categoryId=" + categoryId + ", parentCategory=" + parentCategory + ", level="
+				+ level + "]";
+	}
+	
+	
 	
 
 }

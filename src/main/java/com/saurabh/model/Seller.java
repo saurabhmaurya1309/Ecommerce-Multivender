@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Seller {
@@ -33,6 +34,7 @@ public class Seller {
 	@Embedded
 	private BankDetails bankDetails = new BankDetails(); 
 	
+	@OneToOne
 	private Address pickupAddress = new Address();
 	
 	private String GSTIN;

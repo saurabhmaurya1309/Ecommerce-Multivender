@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.saurabh.config.JwtProvider;
 import com.saurabh.domain.AccountStatus;
 import com.saurabh.domain.USER_ROLE;
+import com.saurabh.exceptions.SellerException;
 import com.saurabh.model.Address;
 import com.saurabh.model.Seller;
 import com.saurabh.repository.AddressRepository;
@@ -60,9 +61,9 @@ public class SellerServiceImpl implements SellerService {
 	}
 
 	@Override
-	public Seller getSellerById(Long id) throws Exception {
+	public Seller getSellerById(Long id) throws SellerException {
 		
-		return sellerRepository.findById(id).orElseThrow(()-> new Exception("seller not found with id"+id));
+		return sellerRepository.findById(id).orElseThrow(()-> new SellerException("seller not found with id"+id));
 	}
 
 	@Override

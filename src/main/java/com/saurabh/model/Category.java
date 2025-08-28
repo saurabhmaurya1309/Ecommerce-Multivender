@@ -14,6 +14,8 @@ public class Category {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	private String name;
+	
 	@NotNull
 	@Column(unique = true)
 	private String categoryId;
@@ -56,23 +58,34 @@ public class Category {
 		this.level = level;
 	}
 
-	public Category(Long id, @NotNull String categoryId, Category parentCategory, @NotNull Integer level) {
-		super();
-		this.id = id;
-		this.categoryId = categoryId;
-		this.parentCategory = parentCategory;
-		this.level = level;
-	}
+	
 
 	public Category() {
 		super();
-		
+		// TODO Auto-generated constructor stub
+	}
+
+	public Category(Long id, String name, @NotNull String categoryId, Category parentCategory, @NotNull Integer level) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.categoryId = categoryId;
+		this.parentCategory = parentCategory;
+		this.level = level;
 	}
 
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", categoryId=" + categoryId + ", parentCategory=" + parentCategory + ", level="
 				+ level + "]";
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

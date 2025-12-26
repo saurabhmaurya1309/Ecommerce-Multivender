@@ -1,18 +1,25 @@
-import { TextField } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import React from 'react'
+import { useAppDispatch } from '../../../State/Store'
+import { login, sendLoginSignupOtp } from '../../../State/AuthSlice'
 
 const SellerLoginForm = () => {
-  const formik= useFormik({
-    initialValues:{
-      email:"",
-      otp:""
+  const dispatch = useAppDispatch();
+  const formik = useFormik({
+    initialValues: {
+      email: "", 
+      otp: ""
     },
-    onSubmit:(values)=>{
-      console.log("form data",values)
+    onSubmit: (values) => {
+      console.log("form data", values)
+      dispatch(login(values))
     }
 
   })
+  const handleSendOtp = ()=>{
+    dispatch(sendLoginSignupOtp(formik.values.email))
+  }
   return (
     <div>
       <h1 className='text-center font-bold text-primary-color pb-5'>Login As a Seller</h1>
@@ -27,20 +34,25 @@ const SellerLoginForm = () => {
           helperText={formik.touched.email && formik.errors.email}
         />
 
-         {true &&
-         <div className='space-y-2'>
-          <p className='font-medium text-sm opacity-60'> Enter OTP sent your email</p>
-           <TextField
-          fullWidth
-          name='otp'
-          label="Otp"
-          value={formik.values.otp}
-          onChange={formik.handleChange}
-          error={formik.touched.otp && Boolean(formik.errors.otp)}
-          helperText={formik.touched.otp && formik.errors.otp}
-        />
-         </div>
-}
+        {true &&
+          <div className='space-y-2'>
+            <p className='font-medium text-sm opacity-60'> Enter OTP sent your email</p>
+            <TextField
+              fullWidth
+              name='otp'
+              label="Otp"
+              value={formik.values.otp}
+              onChange={formik.handleChange}
+              error={formik.touched.otp && Boolean(formik.errors.otp)}
+              helperText={formik.touched.otp && formik.errors.otp}
+            />
+          </div>
+        }
+        <Button  onClick={handleSendOtp}
+        fullWidth variant='contained' sx={{ py: "11px" }}>
+           Send Otp</Button>
+
+        <Button onClick={() => formik.submitForm()} fullWidth variant='contained' sx={{ py: "11px" }}> Login</Button>
       </div>
     </div>
 

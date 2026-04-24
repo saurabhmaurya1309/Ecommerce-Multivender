@@ -1,6 +1,5 @@
 package com.saurabh.controller;
 
-import java.awt.color.ProfileDataException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +35,7 @@ public class ProductController {
 	
 	@GetMapping("/search")
 	public ResponseEntity<List<Product>>searchProduct(@RequestParam(required = false) String query){
+		System.out.println(query);
 		List<Product>products=productService.searchProducts(query);
 		return new ResponseEntity<>(products,HttpStatus.OK);
 	}
@@ -54,7 +54,7 @@ public class ProductController {
 			){
 		return new ResponseEntity<>(productService.getAllProducts(category, brand,
 				                         color, size, minPrice,
-				                         maxPrice, size, sort, stock, pageNumber),HttpStatus.OK);
+				                         maxPrice, minDiscount, sort, stock, pageNumber),HttpStatus.OK);
 		
 	}
 	

@@ -18,7 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "`order`")
+@Table(name = "orders")
 public class Order {
 
 	@Id
@@ -27,7 +27,12 @@ public class Order {
 	
 	private String orderId;
 	
+	@ManyToOne
+	private User user;
+	
 	private Long sellerId;
+	
+	
 	
 	@OneToMany(mappedBy = "order",cascade =CascadeType.ALL,orphanRemoval =true)
 	private List<OrderItem>orderItems=new ArrayList<>();
@@ -54,27 +59,6 @@ public class Order {
 	
 	private LocalDateTime deliverDate  = orderDate.plusDays(7);
 
-	public Order(Long id, String orderId, Long sellerId, List<OrderItem> orderItems, Address shippingAddress,
-			PaymentDetails paymentDetails, double totalMrpPrice, Integer totalSellingPrice, Integer discount,
-			OrderStatus orderStatus, int totalItem, PaymentStatus paymentStatus, LocalDateTime orderDate,
-			LocalDateTime deliverDate) {
-		super();
-		this.id = id;
-		this.orderId = orderId;
-		this.sellerId = sellerId;
-		this.orderItems = orderItems;
-		this.shippingAddress = shippingAddress;
-		this.paymentDetails = paymentDetails;
-		this.totalMrpPrice = totalMrpPrice;
-		this.totalSellingPrice = totalSellingPrice;
-		this.discount = discount;
-		this.orderStatus = orderStatus;
-		this.totalItem = totalItem;
-		this.paymentStatus = paymentStatus;
-		this.orderDate = orderDate;
-		this.deliverDate = deliverDate;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -89,6 +73,14 @@ public class Order {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Long getSellerId() {
@@ -186,9 +178,44 @@ public class Order {
 	public void setDeliverDate(LocalDateTime deliverDate) {
 		this.deliverDate = deliverDate;
 	}
-	public Order() {
-	    // Required by JPA
+
+	public Order(Long id, String orderId, User user, Long sellerId, List<OrderItem> orderItems, Address shippingAddress,
+			PaymentDetails paymentDetails, double totalMrpPrice, Integer totalSellingPrice, Integer discount,
+			OrderStatus orderStatus, int totalItem, PaymentStatus paymentStatus, LocalDateTime orderDate,
+			LocalDateTime deliverDate) {
+		super();
+		this.id = id;
+		this.orderId = orderId;
+		this.user = user;
+		this.sellerId = sellerId;
+		this.orderItems = orderItems;
+		this.shippingAddress = shippingAddress;
+		this.paymentDetails = paymentDetails;
+		this.totalMrpPrice = totalMrpPrice;
+		this.totalSellingPrice = totalSellingPrice;
+		this.discount = discount;
+		this.orderStatus = orderStatus;
+		this.totalItem = totalItem;
+		this.paymentStatus = paymentStatus;
+		this.orderDate = orderDate;
+		this.deliverDate = deliverDate;
 	}
+
+	public Order() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", orderId=" + orderId + ", user=" + user + ", sellerId=" + sellerId
+				+ ", orderItems=" + orderItems + ", shippingAddress=" + shippingAddress + ", paymentDetails="
+				+ paymentDetails + ", totalMrpPrice=" + totalMrpPrice + ", totalSellingPrice=" + totalSellingPrice
+				+ ", discount=" + discount + ", orderStatus=" + orderStatus + ", totalItem=" + totalItem
+				+ ", paymentStatus=" + paymentStatus + ", orderDate=" + orderDate + ", deliverDate=" + deliverDate
+				+ "]";
+	}
+
 	
 	
 	

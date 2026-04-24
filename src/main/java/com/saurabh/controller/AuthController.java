@@ -55,7 +55,7 @@ public class AuthController {
 	
 	@PostMapping("/signing")
 	public ResponseEntity<AuthResponse>loginHandler(@RequestBody LoginRequest req) throws Exception{
-		System.out.println("dssssss");
+		System.out.println("dssssss"+req.getEmail());
 		
 		 AuthResponse authResponse= authService.siging(req);
 		

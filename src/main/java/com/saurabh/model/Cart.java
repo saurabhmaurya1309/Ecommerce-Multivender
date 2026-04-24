@@ -26,7 +26,7 @@ public class Cart {
 	
 	private double totalSellingPrice;
 	
-	private int toatalItem;
+	private int totalItem;
 	
 	private int totalMrpPrice;
 	
@@ -67,11 +67,11 @@ public class Cart {
 	}
 
 	public int getToatalItem() {
-		return toatalItem;
+		return totalItem;
 	}
 
 	public void setToatalItem(int toatalItem) {
-		this.toatalItem = toatalItem;
+		this.totalItem = toatalItem;
 	}
 
 	public int getTotalMrpPrice() {
@@ -105,7 +105,7 @@ public class Cart {
 		this.user = user;
 		this.cartItems = cartItems;
 		this.totalSellingPrice = totalSellingPrice;
-		this.toatalItem = toatalItem;
+		this.totalItem = toatalItem;
 		this.totalMrpPrice = totalMrpPrice;
 		this.discount = discount;
 		this.couponCode = couponCode;
@@ -118,7 +118,7 @@ public class Cart {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(couponCode, discount, id, toatalItem, totalMrpPrice, totalSellingPrice, user);
+		return Objects.hash(couponCode, discount, id, totalItem, totalMrpPrice, totalSellingPrice, user);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class Cart {
 			return false;
 		Cart other = (Cart) obj;
 		return Objects.equals(couponCode, other.couponCode) && discount == other.discount
-				&& Objects.equals(id, other.id) && toatalItem == other.toatalItem
+				&& Objects.equals(id, other.id) && totalItem == other.totalItem
 				&& totalMrpPrice == other.totalMrpPrice
 				&& Double.doubleToLongBits(totalSellingPrice) == Double.doubleToLongBits(other.totalSellingPrice)
 				&& Objects.equals(user, other.user);

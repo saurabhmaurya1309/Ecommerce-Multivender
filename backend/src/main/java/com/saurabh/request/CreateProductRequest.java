@@ -1,6 +1,9 @@
 package com.saurabh.request;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.saurabh.model.SizeQuantity;
 
 public class CreateProductRequest {
     private String title;
@@ -12,7 +15,22 @@ public class CreateProductRequest {
 	private String category;
 	private String category2;
 	private String category3;
-	private String sizes;
+	private List<SizeQuantity> sizeQuantities = new ArrayList<>();
+	public CreateProductRequest(String title, String description, int mrpPrice, int sellingPrice, String color,
+			List<String> images, String category, String category2, String category3,
+			List<SizeQuantity> sizeQuantities) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.mrpPrice = mrpPrice;
+		this.sellingPrice = sellingPrice;
+		this.color = color;
+		this.images = images;
+		this.category = category;
+		this.category2 = category2;
+		this.category3 = category3;
+		this.sizeQuantities = sizeQuantities;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -67,12 +85,13 @@ public class CreateProductRequest {
 	public void setCategory3(String category3) {
 		this.category3 = category3;
 	}
-	public String getSizes() {
-		return sizes;
+	public List<SizeQuantity> getSizeQuantities() {
+		return sizeQuantities;
 	}
-	public void setSizes(String sizes) {
-		this.sizes = sizes;
+	public void setSizeQuantities(List<SizeQuantity> sizeQuantities) {
+		this.sizeQuantities = sizeQuantities;
 	}
+	
 	
 
 }

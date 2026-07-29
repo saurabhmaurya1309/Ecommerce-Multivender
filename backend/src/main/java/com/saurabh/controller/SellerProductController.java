@@ -18,6 +18,7 @@ import com.saurabh.exceptions.ProductException;
 import com.saurabh.model.Product;
 import com.saurabh.model.Seller;
 import com.saurabh.request.CreateProductRequest;
+import com.saurabh.request.UpdateProductRequest;
 import com.saurabh.service.ProductService;
 import com.saurabh.service.SellerService;
 
@@ -64,11 +65,21 @@ public class SellerProductController {
 	}
 	
 	@PutMapping("/{productId}")
-	public ResponseEntity<Product>updateProduct(@PathVariable Long productId,@RequestBody Product product) throws ProductException{
+	public ResponseEntity<Product>updateProduct(@PathVariable Long productId,@RequestBody UpdateProductRequest product) throws ProductException{
 		
 		Product updatedProduct=productService.updateProduct(productId, product);
 		return new ResponseEntity<>(updatedProduct,HttpStatus.OK);
 		
+	}
+	@GetMapping("/{productId}")
+	public ResponseEntity<Product> getProductById(
+	        @PathVariable Long productId)
+	        throws ProductException {
+
+	    Product product =
+	            productService.findProductById(productId);
+
+	    return ResponseEntity.ok(product);
 	}
 	
 	

@@ -32,7 +32,9 @@ public class AppConfig {
 						.requestMatchers("/sellers/login").permitAll()
 						.requestMatchers("/sellers/reset-password").permitAll()
 						.requestMatchers("/api/products/*/reviews").permitAll()
+						.requestMatchers("/sellers/**").authenticated()
 						.requestMatchers("/api/**").authenticated()
+					
 						//.anyRequest().permitAll()
 				).addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
 		           .csrf(csrf->csrf.disable())

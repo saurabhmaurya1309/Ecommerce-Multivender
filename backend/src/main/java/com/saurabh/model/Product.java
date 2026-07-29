@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ public class Product {
 	
 	private String title;
 	
+	@Column(columnDefinition = "TEXT")
 	private String description;
 	
 	private  int mrpPrice;
@@ -30,7 +32,6 @@ public class Product {
 	
 	private int discountPercent;
 	
-	private int quantity;
 	
 	private String color;
 	
@@ -47,7 +48,10 @@ public class Product {
 	
 	private LocalDateTime createdAt;
 	
-	private String sizes;
+	@ElementCollection
+	private List<SizeQuantity> sizeQuantities = new ArrayList<>();
+	
+	private boolean active = true;
 	
 	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Review>reviews = new ArrayList<>();
@@ -100,14 +104,6 @@ public class Product {
 		this.discountPercent = discountPercent;
 	}
 
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
 	public String getColor() {
 		return color;
 	}
@@ -156,12 +152,20 @@ public class Product {
 		this.createdAt = createdAt;
 	}
 
-	public String getSizes() {
-		return sizes;
+	public List<SizeQuantity> getSizeQuantities() {
+		return sizeQuantities;
 	}
 
-	public void setSizes(String sizes) {
-		this.sizes = sizes;
+	public void setSizeQuantities(List<SizeQuantity> sizeQuantities) {
+		this.sizeQuantities = sizeQuantities;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public List<Review> getReviews() {
@@ -173,8 +177,8 @@ public class Product {
 	}
 
 	public Product(Long id, String title, String description, int mrpPrice, int sellingPrice, int discountPercent,
-			int quantity, String color, List<String> images, int numRatings, Category category, Seller seller,
-			LocalDateTime createdAt, String sizes, List<Review> reviews) {
+			String color, List<String> images, int numRatings, Category category, Seller seller,
+			LocalDateTime createdAt, List<SizeQuantity> sizeQuantities, boolean active, List<Review> reviews) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -182,14 +186,14 @@ public class Product {
 		this.mrpPrice = mrpPrice;
 		this.sellingPrice = sellingPrice;
 		this.discountPercent = discountPercent;
-		this.quantity = quantity;
 		this.color = color;
 		this.images = images;
 		this.numRatings = numRatings;
 		this.category = category;
 		this.seller = seller;
 		this.createdAt = createdAt;
-		this.sizes = sizes;
+		this.sizeQuantities = sizeQuantities;
+		this.active = active;
 		this.reviews = reviews;
 	}
 
@@ -197,7 +201,7 @@ public class Product {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	
 	
 	

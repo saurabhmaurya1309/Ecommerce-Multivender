@@ -18,16 +18,17 @@ import com.saurabh.model.Seller;
 import com.saurabh.repository.CategoryRepository;
 import com.saurabh.repository.ProductRepository;
 import com.saurabh.request.CreateProductRequest;
+import com.saurabh.request.UpdateProductRequest;
 import com.saurabh.service.ProductService;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 
 @Service
-public class ProductServiceImpl  implements ProductService{
+public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	
+
 	public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
@@ -35,32 +36,32 @@ public class ProductServiceImpl  implements ProductService{
 
 	@Override
 	public Product createProduct(CreateProductRequest req, Seller seller) {
-		Category category1=categoryRepository.findByCategoryId(req.getCategory());
-		
-		if(category1==null) {
-			Category category= new Category();
+		Category category1 = categoryRepository.findByCategoryId(req.getCategory());
+
+		if (category1 == null) {
+			Category category = new Category();
 			category.setCategoryId(req.getCategory());
 			category.setLevel(1);
-			category1=categoryRepository.save(category);
+			category1 = categoryRepository.save(category);
 		}
-		Category category2=categoryRepository.findByCategoryId(req.getCategory2());
-		if(category2==null) {
-			Category category= new Category();
+		Category category2 = categoryRepository.findByCategoryId(req.getCategory2());
+		if (category2 == null) {
+			Category category = new Category();
 			category.setCategoryId(req.getCategory2());
 			category.setLevel(2);
 			category.setParentCategory(category1);
-			category2=categoryRepository.save(category);
+			category2 = categoryRepository.save(category);
 		}
-		Category category3=categoryRepository.findByCategoryId(req.getCategory3());
-		if(category3==null) {
-			Category category= new Category();
+		Category category3 = categoryRepository.findByCategoryId(req.getCategory3());
+		if (category3 == null) {
+			Category category = new Category();
 			category.setCategoryId(req.getCategory3());
 			category.setLevel(3);
 			category.setParentCategory(category2);
-			category3=categoryRepository.save(category);
+			category3 = categoryRepository.save(category);
 		}
-		int discountPercentage=calculateDiscountPercentage(req.getMrpPrice(),req.getSellingPrice());
-		Product product=new Product();
+		int discountPercentage = calculateDiscountPercentage(req.getMrpPrice(), req.getSellingPrice());
+		Product product = new Product();
 		product.setSeller(seller);
 		product.setCategory(category3);
 		product.setDescription(req.getDescription());
@@ -70,105 +71,186 @@ public class ProductServiceImpl  implements ProductService{
 		product.setSellingPrice(req.getSellingPrice());
 		product.setImages(req.getImages());
 		product.setMrpPrice(req.getMrpPrice());
-		product.setSizes(req.getSizes());
-		product.setDiscountPercent(0);
+		product.setSizeQuantities(req.getSizeQuantities());
 		product.setDiscountPercent(discountPercentage);
-		
+
 		return productRepository.save(product);
 	}
 
 	private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {
-		if(mrpPrice<=0) {
+		if (mrpPrice <= 0) {
 			throw new IllegalArgumentException("Actual price must be greater than 0");
 		}
-		double discount=mrpPrice-sellingPrice;
-		double discountPercentage=(discount/mrpPrice)*100;
+		double discount = mrpPrice - sellingPrice;
+		double discountPercentage = (discount / mrpPrice) * 100;
 		return (int) discountPercentage;
 	}
 
 	@Override
 	public void deleteProduct(Long productId) throws ProductException {
-		Product product=findProductById(productId);
+		Product product = findProductById(productId);
 		productRepository.delete(product);
-		
+
 	}
 
 	@Override
-	public Product updateProduct(Long productId, Product product) throws ProductException {
-		findProductById(productId);
-		product.setId(productId);
+	public Product updateProduct(Long productId, UpdateProductRequest req) throws ProductException {
+
+		Product product =
+		        findProductById(productId);
+
+		product.setTitle(req.getTitle());
+
+		product.setDescription(
+		        req.getDescription()
+		);
+
+		product.setMrpPrice(
+		        req.getMrpPrice()
+		);
+
+		product.setSellingPrice(
+		        req.getSellingPrice()
+		);
+
+		product.setColor(
+		        req.getColor()
+		);
+
+		product.setImages(
+		        req.getImages()
+		);
+
+		product.setSizeQuantities(
+		        req.getSizeQuantities()
+		);
+
+		Category category =
+		        getOrCreateCategory(
+		                req.getCategory(),
+		                req.getCategory2(),
+		                req.getCategory3()
+		        );
+
+		product.setCategory(category);
+
+		product.setDiscountPercent(
+		        calculateDiscountPercentage(
+		            req.getMrpPrice(),
+		            req.getSellingPrice()
+		        )
+		);
+
 		return productRepository.save(product);
+	}
+	
+	private Category getOrCreateCategory(
+	        String category,
+	        String category2,
+	        String category3
+	) {
+
+	    Category level1 =
+	            categoryRepository.findByCategoryId(category);
+
+	    if (level1 == null) {
+	        level1 = new Category();
+	        level1.setCategoryId(category);
+	        level1.setLevel(1);
+	        level1 = categoryRepository.save(level1);
+	    }
+
+	    Category level2 =
+	            categoryRepository.findByCategoryId(category2);
+
+	    if (level2 == null) {
+	        level2 = new Category();
+	        level2.setCategoryId(category2);
+	        level2.setLevel(2);
+	        level2.setParentCategory(level1);
+	        level2 = categoryRepository.save(level2);
+	    }
+
+	    Category level3 =
+	            categoryRepository.findByCategoryId(category3);
+
+	    if (level3 == null) {
+	        level3 = new Category();
+	        level3.setCategoryId(category3);
+	        level3.setLevel(3);
+	        level3.setParentCategory(level2);
+	        level3 = categoryRepository.save(level3);
+	    }
+
+	    return level3;
 	}
 
 	@Override
 	public Product findProductById(Long productId) throws ProductException {
-		
-		return productRepository.findById(productId).orElseThrow(()->new ProductException("product not found with id"+productId));
+
+		return productRepository.findById(productId)
+				.orElseThrow(() -> new ProductException("product not found with id" + productId));
 	}
 
 	@Override
 	public List<Product> searchProducts(String query) {
-		
+
 		return productRepository.searchProduct(query);
 	}
 
 	@Override
 	public Page<Product> getAllProducts(String category, String brand, String colors, String sizes, Integer minPrice,
 			Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber) {
-		Specification<Product>spec=(root,query,criteriaBuilder)->{
-			List<Predicate>predicates=new ArrayList<>();
-			if(category!=null) {
-				Join<Product, Category>categorJoin=root.join("category");
-				predicates.add(criteriaBuilder.equal(categorJoin.get("categoryId"),category));
+		Specification<Product> spec = (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			if (category != null) {
+				Join<Product, Category> categorJoin = root.join("category");
+				predicates.add(criteriaBuilder.equal(categorJoin.get("categoryId"), category));
 			}
-			if(colors!=null &&!colors.isEmpty()) {
-				predicates.add(criteriaBuilder.equal(root.get("color"),colors));
+			if (colors != null && !colors.isEmpty()) {
+				predicates.add(criteriaBuilder.equal(root.get("color"), colors));
 			}
-			if(sizes!=null && !sizes.isEmpty()) {
+			if (sizes != null && !sizes.isEmpty()) {
 				predicates.add(criteriaBuilder.equal(root.get("size"), sizes));
 			}
-			if(minPrice !=null) {
+			if (minPrice != null) {
 				predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("sellingPrice"), minPrice));
 			}
-			if(maxPrice !=null) {
+			if (maxPrice != null) {
 				predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("sellingPrice"), maxPrice));
 			}
-			if(minDiscount !=null) {
+			if (minDiscount != null) {
 				predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("discountPercent"), minDiscount));
 			}
-			if(stock !=null) {
+			if (stock != null) {
 				predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("stock"), stock));
 			}
-			
-			
+
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 		};
 		Pageable pageable;
-		if(sort!=null && !sort.isEmpty()) {
+		if (sort != null && !sort.isEmpty()) {
 			switch (sort) {
-			    case "price_low":
-			    	pageable =PageRequest.of(pageNumber!=null? pageNumber:0,10,
-			    			Sort.by("sellingPrice").ascending());
-			    	break;
-			    case "price_high":
-			    	pageable =PageRequest.of(pageNumber!=null? pageNumber:0,10,
-			    			Sort.by("sellingPrice").descending());
-			    	break;
-			   default:
-			    	pageable =PageRequest.of(pageNumber!=null? pageNumber:0,10,
-			    			Sort.by("sellingPrice").ascending());	
-				
+			case "price_low":
+				pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").ascending());
+				break;
+			case "price_high":
+				pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, 10,
+						Sort.by("sellingPrice").descending());
+				break;
+			default:
+				pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").ascending());
+
 			}
+		} else {
+			pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.unsorted());
 		}
-		else {
-			pageable=PageRequest.of(pageNumber!=null?pageNumber:0,10,Sort.unsorted());
-		}
-	   return productRepository.findAll(spec,pageable);
+		return productRepository.findAll(spec, pageable);
 	}
 
 	@Override
 	public List<Product> getProductBySellerId(Long sellerId) {
-		
+
 		return productRepository.findBySellerId(sellerId);
 	}
 

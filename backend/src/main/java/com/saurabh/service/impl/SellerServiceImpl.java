@@ -74,7 +74,7 @@ public class SellerServiceImpl implements SellerService {
 			
 		}
 		if(seller.getMobile()!=null) {
-			existingSeller.setSellerName(seller.getSellerName());
+			existingSeller.setMobile(seller.getMobile());
 		}
 		if(seller.getEmail()!=null) {
 			existingSeller.setEmail(seller.getEmail());
@@ -95,18 +95,60 @@ public class SellerServiceImpl implements SellerService {
 			existingSeller.getBankDetails().setIfscCode(seller.getBankDetails().getIfscCode());
 			
 		}
-		if(seller.getPickupAddress()!=null
-				&&seller.getPickupAddress().getAddress()!=null
-				&&seller.getPickupAddress().getMobile()!=null
-				&&seller.getPickupAddress().getCity()!=null
-				&&seller.getPickupAddress().getState()!=null) {
-			
-			existingSeller.getPickupAddress().setCity(seller.getPickupAddress().getAddress());
-			existingSeller.getPickupAddress().setState(seller.getPickupAddress().getState());
-			existingSeller.getPickupAddress().setMobile(seller.getPickupAddress().getMobile());
-			existingSeller.getPickupAddress().setPincode(seller.getPickupAddress().getPincode());
-			
-		}
+		if (
+			    seller.getPickupAddress() != null
+			) {
+
+			    Address existingAddress =
+			        existingSeller.getPickupAddress();
+
+			    Address newAddress =
+			        seller.getPickupAddress();
+
+
+			    if (newAddress.getName() != null) {
+			        existingAddress.setName(
+			            newAddress.getName()
+			        );
+			    }
+
+			    if (newAddress.getMobile() != null) {
+			        existingAddress.setMobile(
+			            newAddress.getMobile()
+			        );
+			    }
+
+			    if (newAddress.getAddress() != null) {
+			        existingAddress.setAddress(
+			            newAddress.getAddress()
+			        );
+			    }
+
+			    if (newAddress.getLocality() != null) {
+			        existingAddress.setLocality(
+			            newAddress.getLocality()
+			        );
+			    }
+
+			    if (newAddress.getCity() != null) {
+			        existingAddress.setCity(
+			            newAddress.getCity()
+			        );
+			    }
+
+			    if (newAddress.getState() != null) {
+			        existingAddress.setState(
+			            newAddress.getState()
+			        );
+			    }
+
+			    if (newAddress.getPincode() != null) {
+			        existingAddress.setPincode(
+			            newAddress.getPincode()
+			        );
+			    }
+
+			}
 		if(seller.getGSTIN()!=null) {
 			existingSeller.setGSTIN(seller.getGSTIN());
 		}
@@ -210,7 +252,7 @@ public class SellerServiceImpl implements SellerService {
 	            USER_ROLE.ROLE_SELLER
 	    );
 
-	    seller.setEmailverified(true);
+	    seller.setEmailVerified(true);
 
 	    seller.setAccountStatus(
 	            AccountStatus.PENDING_VERIFICATION

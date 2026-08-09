@@ -29,10 +29,8 @@ const SellerLoginForm = ({
         ).unwrap();
 
         toast.success(result.message);
-
-        if (result.role === "ROLE_SELLER") {
           navigate("/seller");
-        }
+        
 
       } catch (error: any) {
         toast.error(

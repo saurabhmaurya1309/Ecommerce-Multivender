@@ -105,7 +105,7 @@ public class Seller {
 		return pickupAddress;
 	}
 
-	public void setPickupAddress(Address pickupAddress) { 
+	public void setPickupAddress(Address pickupAddress) {
 		this.pickupAddress = pickupAddress;
 	}
 
@@ -125,12 +125,12 @@ public class Seller {
 		this.role = role;
 	}
 
-	public boolean emailVerified () {
-		return emailVerified ;
+	public boolean isEmailVerified() {
+		return emailVerified;
 	}
 
-	public void setEmailverified(boolean emailVerified ) {
-		this.emailVerified  = emailVerified ;
+	public void setEmailVerified(boolean emailVerified) {
+		this.emailVerified = emailVerified;
 	}
 
 	public AccountStatus getAccountStatus() {
@@ -141,9 +141,17 @@ public class Seller {
 		this.accountStatus = accountStatus;
 	}
 
+	@Override
+	public String toString() {
+		return "Seller [id=" + id + ", sellerName=" + sellerName + ", mobile=" + mobile + ", email=" + email
+				+ ", password=" + password + ", businessDetails=" + businessDetails + ", bankDetails=" + bankDetails
+				+ ", pickupAddress=" + pickupAddress + ", GSTIN=" + GSTIN + ", role=" + role + ", emailVerified="
+				+ emailVerified + ", accountStatus=" + accountStatus + "]";
+	}
+
 	public Seller(Long id, String sellerName, String mobile, String email, String password,
 			BusinessDetails businessDetails, BankDetails bankDetails, Address pickupAddress, String gSTIN,
-			USER_ROLE role, boolean emailVerified , AccountStatus accountStatus) {
+			USER_ROLE role, boolean emailVerified, AccountStatus accountStatus) {
 		super();
 		this.id = id;
 		this.sellerName = sellerName;
@@ -155,7 +163,7 @@ public class Seller {
 		this.pickupAddress = pickupAddress;
 		GSTIN = gSTIN;
 		this.role = role;
-		this.emailVerified  = emailVerified ;
+		this.emailVerified = emailVerified;
 		this.accountStatus = accountStatus;
 	}
 
@@ -163,6 +171,8 @@ public class Seller {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	
 	
 	
 	

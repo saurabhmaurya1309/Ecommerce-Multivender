@@ -60,6 +60,7 @@ interface ProductState {
     product: Product | null;
     products: Product[];
     totalPages: number;
+    totalElements: number;
     loading: boolean;
     error: any;
     searchProduct: Product[];
@@ -68,6 +69,7 @@ const initialState: ProductState = {
     product: null,
     products: [],
     totalPages: 1,
+    totalElements: 0,
     loading: false,
     error: null,
     searchProduct: []
@@ -97,6 +99,7 @@ const productSlice = createSlice({
             state.loading = false;
             state.products = action.payload.content;
             state.totalPages = action.payload.totalPages;
+            state.totalElements = action.payload.totalElements;
         })
         builder.addCase(fetchAllProducts.rejected, (state, action) => {
             state.loading = false;

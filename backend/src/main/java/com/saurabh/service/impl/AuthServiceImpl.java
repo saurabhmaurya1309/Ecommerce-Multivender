@@ -229,38 +229,21 @@ public class AuthServiceImpl implements AuthService {
 
 		return response;
 	}
-	private Authentication authenticateSeller(
-	        String email,
-	        String password
-	) {
 
-	    UserDetails userDetails =
-	            customUserServiceImpl
-	                    .loadSellerByUsername(
-	                            email
-	                    );
+	private Authentication authenticateSeller(String email, String password) {
 
-	    if (userDetails == null) {
-	        throw new BadCredentialsException(
-	                "Invalid email"
-	        );
-	    }
+		UserDetails userDetails = customUserServiceImpl.loadSellerByUsername(email);
 
-	    if (!passwordEncoder.matches(
-	            password,
-	            userDetails.getPassword()
-	    )) {
+		if (userDetails == null) {
+			throw new BadCredentialsException("Invalid email");
+		}
 
-	        throw new BadCredentialsException(
-	                "Invalid password"
-	        );
-	    }
+		if (!passwordEncoder.matches(password, userDetails.getPassword())) {
 
-	    return new UsernamePasswordAuthenticationToken(
-	            userDetails,
-	            null,
-	            userDetails.getAuthorities()
-	    );
+			throw new BadCredentialsException("Invalid password");
+		}
+
+		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 
 	@Override

@@ -8,7 +8,7 @@ const SellerDashBoard = () => {
     }
     return (
         <div>
-            <div className='lg:flex lg:h-[90vh]'>
+           <div className="lg:flex lg:h-[calc(100vh-70px)]">
                 <section className='hidden lg:block h-full'>
                     <SellerDrawerList toggleDrawer={toggleDrawer}/>
                 </section>

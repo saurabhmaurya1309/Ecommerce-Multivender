@@ -6,6 +6,17 @@ import { isTokenExpired } from "../utils/jwt";
 /* =======================
    SEND OTP
 ======================= */
+const normalizeRole = (role: string | null): "USER" | "SELLER" | null => {
+  if (role === "ROLE_SELLER" || role === "SELLER") {
+    return "SELLER";
+  }
+
+  if (role === "ROLE_CUSTOMER" || role === "USER") {
+    return "USER";
+  }
+
+  return null;
+};
 export const sendLoginSignupOtp = createAsyncThunk(
   "/auth/sendLoginSignupOtp",
   async (
@@ -70,7 +81,7 @@ export const loginCustomer = createAsyncThunk(
         response.data.jwt
       );
 
-      return response.data.jwt;
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data || error.message
@@ -205,12 +216,30 @@ export const fetchUserProfile = createAsyncThunk(
    STATE
 ======================= */
 
-const getRoleFromToken = (token: string): "USER" | "SELLER" | null => {
+const getRoleFromToken = (
+  token: string
+): "USER" | "SELLER" | "ADMIN" | null => {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    if (payload.authorities?.includes("ROLE_SELLER")) return "SELLER";
-    if (payload.authorities?.includes("ROLE_CUSTOMER")) return "USER";
+    const payload = JSON.parse(
+      atob(token.split(".")[1])
+    );
+
+    const authorities = payload.authorities || "";
+
+    if (authorities.includes("ROLE_SELLER")) {
+      return "SELLER";
+    }
+
+    if (authorities.includes("ROLE_ADMIN")) {
+      return "ADMIN";
+    }
+
+    if (authorities.includes("ROLE_CUSTOMER")) {
+      return "USER";
+    }
+
     return null;
+
   } catch {
     return null;
   }
@@ -272,12 +301,12 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.jwt = action.payload.jwt;
         state.isLoggedIn = true;
-        state.role = action.payload.role;
+        state.role = normalizeRole(action.payload.role);
       })
       .addCase(loginCustomer.fulfilled, (state, action) => {
-        state.jwt = action.payload;
+        state.jwt = action.payload.jwt;
         state.isLoggedIn = true;
-        state.role = "USER";
+        state.role = normalizeRole(action.payload.role);
       })
       .addCase(register.fulfilled, (state, action) => {
         state.otpSend = false;
@@ -306,6 +335,7 @@ const authSlice = createSlice({
         state.isLoggedIn = false;
         state.user = null;
         state.otpSend = false;
+        state.role = null;
       })
 
       .addCase(resetPassword.pending, (state) => {

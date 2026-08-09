@@ -31,7 +31,7 @@ const categoryThree: { [key: string]: any[] } = {
     beauty: beautyLevelThree
 }
 const CategorySheet = ({ selectedCategory, setShowSheet }: any) => {
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const childCategory = (category: any, parentCategoryId: any) => {
         return category.filter((child: any) => child.parentCategoryId === parentCategoryId)
     }
@@ -42,15 +42,29 @@ const CategorySheet = ({ selectedCategory, setShowSheet }: any) => {
                 <div className='flex h-full text-sm flex-wrap'>
                     {
                         categoryTwo[selectedCategory]?.map((item, index) =>
-                            <div className={`p-8 lg:w-[20%] ${(Math.floor(index / 5) + index) % 2 === 0? "bg-slate-50" : "bg-white"}`} key={item.categoryId}>
+                            <div className={`p-8 lg:w-[20%] ${(Math.floor(index / 5) + index) % 2 === 0 ? "bg-slate-50" : "bg-white"}`} key={item.categoryId}>
                                 <p className='mb-5 text-primary-color font-semibold'>{item.name}</p>
                                 <ul className='space-y-3'>
                                     {
-                                        childCategory(categoryThree[selectedCategory], item.categoryId).map((item: any) =>
-                                            <div onClick={()=>navigate(`/products/${item.categoryId}`)}>
-                                                <li className='hover:text-primary-color cursor-pointer'>{item.name}</li >
+                                        childCategory(
+                                            categoryThree[selectedCategory],
+                                            item.categoryId
+                                        ).map((child: any) => (
 
-                                            </div>)
+                                            <li
+                                                key={child.categoryId}
+                                                onClick={() => {
+                                                    navigate(`/products/${child.categoryId}`);
+
+                                                    // ⭐ close mega menu
+                                                    setShowSheet(false);
+                                                }}
+                                                className='hover:text-primary-color cursor-pointer'
+                                            >
+                                                {child.name}
+                                            </li>
+
+                                        ))
                                     }
 
                                 </ul>

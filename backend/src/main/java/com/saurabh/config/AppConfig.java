@@ -28,8 +28,10 @@ public class AppConfig {
 				SessionCreationPolicy.STATELESS
 				)).authorizeHttpRequests(authorize->authorize
 						.requestMatchers("/auth/**").permitAll()
+						.requestMatchers("/users/**").authenticated()
 						.requestMatchers("/sellers/signup").permitAll()
 						.requestMatchers("/sellers/login").permitAll()
+						.requestMatchers("/products/**").permitAll()
 						.requestMatchers("/sellers/reset-password").permitAll()
 						.requestMatchers("/api/products/*/reviews").permitAll()
 						.requestMatchers("/sellers/**").authenticated()

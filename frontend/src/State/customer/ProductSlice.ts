@@ -31,7 +31,7 @@ export const searchProduct = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             console.log("error - ", error)
-            rejectWithValue(error.message);
+           return rejectWithValue(error.message);
         }
     }
 )
@@ -51,7 +51,7 @@ export const fetchAllProducts = createAsyncThunk<any, any>(
             return response.data;
         } catch (error: any) {
             console.log("error - ", error)
-            rejectWithValue(error.message);
+            return rejectWithValue(error.message);
         }
     }
 )

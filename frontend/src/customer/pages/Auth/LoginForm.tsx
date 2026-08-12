@@ -4,7 +4,7 @@ import { Button, CircularProgress, TextField } from "@mui/material";
 import { loginCustomer } from "../../../State/AuthSlice";
 import { useAppDispatch, useAppSelector } from "../../../State/Store";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 
 interface LoginFormProps {
   openForgotPassword: () => void;
@@ -13,6 +13,7 @@ interface LoginFormProps {
 const LoginForm = ({ openForgotPassword }: LoginFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading } =
     useAppSelector(
       (state) => state.auth
@@ -40,7 +41,10 @@ const LoginForm = ({ openForgotPassword }: LoginFormProps) => {
       try {
         await dispatch(loginCustomer(values)).unwrap();
         toast.success("Login successful 🎉");
-        navigate("/"); // ✅ redirect to home
+        const from = location.state?.from || "/";
+        navigate(from,{
+          replace: true
+        });
       } catch (error: any) {
         toast.error(error.error || "Invalid credentials or login failed");
       }

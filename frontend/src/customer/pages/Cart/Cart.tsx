@@ -1,81 +1,214 @@
-import React, { useEffect, useState } from 'react'
-import { Close, LocalOffer } from '@mui/icons-material'
-import { teal } from '@mui/material/colors'
-import { Button, IconButton, TextField } from '@mui/material'
-import PricingCard from './PricingCard'
-import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../State/Store'
-import { fetchUserCart } from '../../../State/customer/CartSlice'
-import CartItemCard from './CartItemCard'
+import React, { useEffect, useState } from "react";
+
+import {
+  Close,
+  LocalOffer,
+} from "@mui/icons-material";
+
+import { teal } from "@mui/material/colors";
+
+import {
+  Button,
+  IconButton,
+  TextField,
+} from "@mui/material";
+
+import PricingCard from "./PricingCard";
+
+import { useNavigate } from "react-router-dom";
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../State/Store";
+
+import {
+  fetchUserCart,
+} from "../../../State/customer/CartSlice";
+
+import CartItemCard from "./CartItemCard";
 
 const Cart = () => {
-  const [cuponCode, setCuponCode] = useState('')
-  const navigate=useNavigate();
-  const handleApplyCoupon = (e:any) => {
-    setCuponCode(e.target.value)
-  }
-  const dispatch=useAppDispatch();
-  const { cart, loading } = useAppSelector((state) => state.cart);
 
-  
-  useEffect(()=>{
-    dispatch(fetchUserCart(localStorage.getItem('jwt') || ''));
-  },[]);
-  if (loading) return <div>Loading...</div>;
+  const [couponCode, setCouponCode] = useState("");
+
+  const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+
+  const { cart, loading } = useAppSelector(
+    (state) => state.cart
+  );
+
+  /* =========================
+     FETCH CART
+  ========================= */
+
+  useEffect(() => {
+
+    const jwt = localStorage.getItem("jwt");
+
+    if (!jwt) {
+      navigate("/login", {
+        state: {
+          from: "/cart",
+        },
+      });
+
+      return;
+    }
+
+    dispatch(fetchUserCart(jwt));
+
+  }, [dispatch, navigate]);
+
+  /* =========================
+     COUPON
+  ========================= */
+
+  const handleApplyCoupon = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCouponCode(e.target.value);
+  };
+
+  /* =========================
+     LOADING
+  ========================= */
+
+  if (loading && !cart) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading cart...
+      </div>
+    );
+  }
+
+  /* =========================
+     EMPTY CART
+  ========================= */
+
+  if (!cart || cart.cartItems.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+
+        <h1 className="text-2xl font-semibold">
+          Your cart is empty
+        </h1>
+
+        <p className="text-gray-500">
+          Looks like you haven't added anything yet.
+        </p>
+
+        <Button
+          variant="contained"
+          onClick={() => navigate("/")}
+        >
+          Continue Shopping
+        </Button>
+
+      </div>
+    );
+  }
+
   return (
-    <div className='pt-10 px-5 sm:px-10 md:px-56 min-h-screen'>
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-5  '>
-        <div className='cartItemSection lg:col-span-2 space-y-3'>
-          {
-           cart?.cartItems.map((item, index) => (
-              <CartItemCard item={item} key={index}/>
-            ))
-          }
+
+    <div className="pt-10 px-5 sm:px-10 md:px-20 lg:px-32 xl:px-48 min-h-screen">
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {/* =========================
+            CART ITEMS
+        ========================= */}
+
+        <div className="lg:col-span-2 space-y-3">
+
+          {cart.cartItems.map((item) => (
+
+            <CartItemCard
+              item={item}
+              key={item.id}
+            />
+
+          ))}
+
         </div>
-        <div className='col-span-1 text-sm space-y-3 '>
-          <div className='border rounded-md px-5 py-3 space-y-5'>
-            <div className='flex gap-3 text-sm items-center '>
-              <div className='flex gap-3 text-sm items-center '>
-                <LocalOffer sx={{ color: teal[600], fontSize: "17px " }} />
-              </div>
-              <span>Apply Coupon</span>
+
+        {/* =========================
+            RIGHT SECTION
+        ========================= */}
+
+        <div className="text-sm space-y-3">
+
+          {/* COUPON */}
+
+          <div className="border rounded-md px-5 py-4 space-y-5">
+
+            <div className="flex gap-3 items-center">
+
+              <LocalOffer
+                sx={{
+                  color: teal[600],
+                  fontSize: "18px",
+                }}
+              />
+
+              <span className="font-medium">
+                Apply Coupon
+              </span>
+
             </div>
-            {
-              true?
-            <div className='flex items-center justify-between'>
-              <TextField onChange={handleApplyCoupon}
-               id="outlined-basic"
-              placeholder='cupon code' size='small'
-              variant='outlined'/>
-              <Button>
+
+            <div className="flex items-center gap-2">
+
+              <TextField
+                fullWidth
+                value={couponCode}
+                onChange={handleApplyCoupon}
+                placeholder="Coupon code"
+                size="small"
+              />
+
+              <Button
+                variant="outlined"
+                disabled={!couponCode.trim()}
+              >
                 Apply
               </Button>
-            </div>:
-            <div className='flex'>
-              <div className='pt-1 pl-5 pr-3 border rounded-md flex gap-2 items-center'>
-                <span>SALE100 Applied</span>
-                <IconButton>
-                  <Close className='text-red-600'/>
-                </IconButton>
-              </div>
-            </div>
-}
-          </div>
-          <div className='border rounded-md'>
-            <PricingCard/>
-            <div className='py-2'>
-              <Button onClick={()=>navigate('/checkout')} fullWidth variant='contained' sx={{py:"11px"}} >
-                Buy Now
 
-              </Button>
             </div>
+
+          </div>
+
+          {/* PRICE */}
+
+          <div className="border rounded-md p-4">
+
+            <PricingCard cart={cart} />
+
+            <div className="pt-4">
+
+              <Button
+                onClick={() => navigate("/checkout")}
+                fullWidth
+                variant="contained"
+                sx={{
+                  py: "11px",
+                }}
+              >
+                Buy Now
+              </Button>
+
+            </div>
+
           </div>
 
         </div>
+
       </div>
 
     </div>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;

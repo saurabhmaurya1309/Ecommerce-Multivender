@@ -1,130 +1,282 @@
-import { Button, Divider, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
-import { teal } from '@mui/material/colors'
-import React, { useState } from 'react'
-import { colors } from '../../../data/Filter/colors'
-import { useSearchParams } from 'react-router-dom'
-import { price } from '../../../data/Filter/price'
-import { discount } from '../../../data/Filter/discount'
+import {
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
+
+import React, { useState } from "react";
+
+import { teal } from "@mui/material/colors";
+
+import { colors } from "../../../data/Filter/colors";
+import { price } from "../../../data/Filter/price";
+import { discount } from "../../../data/Filter/discount";
+
+import { useSearchParams } from "react-router-dom";
+
 
 const FilterSection = () => {
-  const [expandColor, setExpandColor] = useState(false);
-  const [searchParms, setSearchParams] = useSearchParams();
-  const handleColorToggle = () => {
-    setExpandColor(!expandColor);
-  }
-  const updateFilterParams =(e:any)=>{
-    const {value,name} = e.target;
-    if(value){
-      searchParms.set(name,value);
-    }
-    else{
-      searchParms.delete(name);
-    }
-    setSearchParams(searchParms);
 
-  }
-  const clearAllFilters = () => {
-    searchParms.forEach((value:any, key:any) => {
-      searchParms.delete(key);
-    }); 
-    setSearchParams(searchParms);
-  }
+  const [expandColor, setExpandColor] = useState(false);
+
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+
+  // ==========================================
+  // UPDATE FILTER
+  // ==========================================
+
+  const updateFilterParams = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
+    const { value, name } = e.target;
+
+    const newParams =
+      new URLSearchParams(searchParams);
+
+    if (value) {
+
+      newParams.set(name, value);
+
+    } else {
+
+      newParams.delete(name);
+
+    }
+
+    setSearchParams(newParams);
+  };
+
+
+  // ==========================================
+  // COLOR EXPAND
+  // ==========================================
+
+  const handleColorToggle = () => {
+
+    setExpandColor((prev) => !prev);
+
+  };
+
+
   return (
-    <div className='-z-50 space-y-5 bg-white'>
-      <div className='flex items-center justify-between h-[40px] px-9 lg:border-r'>
-        <p className='text-lg font-semibold'>Filters</p>
-        <Button onClick={clearAllFilters}
-         size='small' className='text-teal-600 cursor-pointer font-semibold'>
-          Clear all
-        </Button>
-      </div>
-      <Divider />
-      <div className='px-9 space-y-6'>
+
+    <div className="space-y-5 bg-white">
+
+      <div className="px-9 space-y-6">
+
+        {/* ==================================
+            COLOR
+        ================================== */}
+
         <section>
 
           <FormControl>
-            <FormLabel sx={{ fontSize: "16px", fontWeight: "bold", color: teal[500], pb: "14px" }}
-              id='color' className='text-2xl font-semibold'>Color</FormLabel>
+
+            <FormLabel
+              sx={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: teal[500],
+                pb: "14px",
+              }}
+              id="color"
+            >
+              Color
+            </FormLabel>
+
+
             <RadioGroup
               aria-labelledby="color"
-              defaultValue=""
               name="color"
+
+              // IMPORTANT:
+              // value comes from URL
+              value={searchParams.get("color") || ""}
+
               onChange={updateFilterParams}
             >
-              {
-                colors.slice(0, expandColor ? colors.length : 5).map((item) => (
-                  <FormControlLabel key={item.name} value={item.name} control={<Radio />}
+
+              {colors
+                .slice(
+                  0,
+                  expandColor ? colors.length : 5
+                )
+                .map((item) => (
+
+                  <FormControlLabel
+                    key={item.name}
+                    value={item.name}
+                    control={<Radio />}
+
                     label={
-                      <div className='flex items-center gap-3'>
+                      <div className="flex items-center gap-3">
+
                         <p>{item.name}</p>
-                        <p style={{ backgroundColor: item.hex }} className={`h-5 w-5 rounded-full ${item.name === "White" ? "border" : ""} `}></p>
+
+                        <p
+                          style={{
+                            backgroundColor: item.hex,
+                          }}
+                          className={`
+                            h-5
+                            w-5
+                            rounded-full
+                            ${
+                              item.name === "White"
+                                ? "border"
+                                : ""
+                            }
+                          `}
+                        />
+
                       </div>
                     }
                   />
-                ))
-              }
+
+                ))}
 
             </RadioGroup>
+
           </FormControl>
+
+
           <div>
-            <button onClick={handleColorToggle}
-              className='text-primary-color cursor-pointer hover:text-teal-900 flex items-center '>
-              {expandColor ? "hide" : `+${colors.length - 5} more`}
+
+            <button
+              onClick={handleColorToggle}
+              className="
+                text-primary-color
+                cursor-pointer
+                hover:text-teal-900
+                flex
+                items-center
+              "
+            >
+
+              {expandColor
+                ? "hide"
+                : `+${colors.length - 5} more`}
+
             </button>
+
           </div>
+
         </section>
+
+
+        {/* ==================================
+            PRICE
+        ================================== */}
 
         <section>
+
           <FormControl>
-            <FormLabel sx={{ fontSize: "16px", fontWeight: "bold", color: teal[500], pb: "14px" }}
-              id='price' className='text-2xl font-semibold'>Price</FormLabel>
+
+            <FormLabel
+              sx={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: teal[500],
+                pb: "14px",
+              }}
+              id="price"
+            >
+              Price
+            </FormLabel>
+
+
             <RadioGroup
               aria-labelledby="price"
-              onChange={updateFilterParams}
-              defaultValue=""
               name="price"
-            >
-              {
-                price.map((item) => (
-                  <FormControlLabel key={item.name} value={item.name} control={<Radio size='small' />}
-                    label={item.name}
-                  />
-                ))
-              }
 
-            </RadioGroup>
-          </FormControl>
-        </section>
-        <Divider/>
-         <section>
-          <FormControl>
-            <FormLabel sx={{ fontSize: "16px", fontWeight: "bold", color: teal[500], pb: "14px" }}
-              id='brand' className='text-2xl font-semibold'>Discount</FormLabel>
-            <RadioGroup
-              aria-labelledby="brand"
+              // IMPORTANT
+              value={searchParams.get("price") || ""}
+
               onChange={updateFilterParams}
-              defaultValue=""
-              name="discount"
             >
-              {
-                discount.map((item) => (
-                  <FormControlLabel key={item.name} value={item.name} control={<Radio size='small' />}
-                    label={item.name}
-                  />
-                ))
-              }
+
+              {price.map((item) => (
+
+                <FormControlLabel
+                  key={item.name}
+                  value={item.name}
+                  control={<Radio size="small" />}
+                  label={item.name}
+                />
+
+              ))}
 
             </RadioGroup>
+
           </FormControl>
+
         </section>
 
+
+        <Divider />
+
+
+        {/* ==================================
+            DISCOUNT
+        ================================== */}
+
+        <section>
+
+          <FormControl>
+
+            <FormLabel
+              sx={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: teal[500],
+                pb: "14px",
+              }}
+              id="discount"
+            >
+              Discount
+            </FormLabel>
+
+
+            <RadioGroup
+              aria-labelledby="discount"
+              name="discount"
+
+              // IMPORTANT
+              value={
+                searchParams.get("discount") || ""
+              }
+
+              onChange={updateFilterParams}
+            >
+
+              {discount.map((item) => (
+
+                <FormControlLabel
+                  key={item.name}
+                  value={item.name}
+                  control={<Radio size="small" />}
+                  label={item.name}
+                />
+
+              ))}
+
+            </RadioGroup>
+
+          </FormControl>
+
+        </section>
 
       </div>
 
-
-
     </div>
-  )
-}
+  );
+};
 
-export default FilterSection
+
+export default FilterSection;

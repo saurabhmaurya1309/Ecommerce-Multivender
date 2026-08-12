@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import AddressCard from './AddressCard'
 import AddressForm from './AddressForm';
 import PricingCard from '../Cart/PricingCard';
+import { useAppSelector } from '../../../State/Store';
 
 const style = {
     position: 'absolute',
@@ -36,6 +37,7 @@ const Checkout = () => {
         setPaymentGateway(e.target.value);
 
     }
+    const { cart, loading } = useAppSelector(  (state) => state.cart);
 
     return (
         <>
@@ -90,7 +92,7 @@ const Checkout = () => {
                             </div>
                         <div className='border rounded-md'>
                             
-                            <PricingCard />
+                            {cart && <PricingCard cart={cart} />}
                             <div className='py-2'>
                                 <Button fullWidth variant='contained' sx={{ py: "11px" }} >
                                     Checkout Now

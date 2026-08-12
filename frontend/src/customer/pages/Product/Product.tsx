@@ -213,63 +213,63 @@ const Product = () => {
           PAGE HEADER
       ====================================== */}
 
-     {/* PAGE HEADER */}
+      {/* PAGE HEADER */}
 
-<div className="max-w-[1500px] mx-auto px-5 lg:px-8 pt-7 pb-6">
+      <div className="max-w-[1500px] mx-auto px-5 lg:px-8 pt-7 pb-6">
 
-  {/* Breadcrumb */}
-  <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
 
-    <span
-      className="cursor-pointer hover:text-teal-600 transition"
-      onClick={() => navigate("/")}
-    >
-      Home
-    </span>
+          <span
+            className="cursor-pointer hover:text-teal-600 transition"
+            onClick={() => navigate("/")}
+          >
+            Home
+          </span>
 
-    <span className="text-gray-300">/</span>
+          <span className="text-gray-300">/</span>
 
-    <span className="text-gray-700 font-medium">
-      {categoryName}
-    </span>
+          <span className="text-gray-700 font-medium">
+            {categoryName}
+          </span>
 
-  </div>
+        </div>
 
 
-  {/* Title */}
-  <div className="flex items-end justify-between gap-4">
+        {/* Title */}
+        <div className="flex items-end justify-between gap-4">
 
-    <div>
+          <div>
 
-      <h1 className="
+            <h1 className="
         text-3xl
         lg:text-4xl
         font-bold
         tracking-tight
         text-gray-900
       ">
-        {categoryName}
-      </h1>
+              {categoryName}
+            </h1>
 
-      <p className="mt-2 text-gray-500 text-base">
-        Explore the latest {categoryName.toLowerCase()} collection
-      </p>
+            <p className="mt-2 text-gray-500 text-base">
+              Explore the latest {categoryName.toLowerCase()} collection
+            </p>
 
-    </div>
+          </div>
 
-    <div className="hidden md:block text-sm text-gray-500">
+          <div className="hidden md:block text-sm text-gray-500">
 
-      <span className="font-semibold text-gray-900">
-        {totalElements ?? products?.length ?? 0}
-      </span>
+            <span className="font-semibold text-gray-900">
+              {totalElements ?? products?.length ?? 0}
+            </span>
 
-      {" "}products
+            {" "}products
 
-    </div>
+          </div>
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
 
       <Divider />
@@ -279,17 +279,17 @@ const Product = () => {
           FILTER + SORT BAR
       ====================================== */}
 
-     {/* FILTER / SORT BAR */}
+      {/* FILTER / SORT BAR */}
 
-<div className="border-y border-gray-200 bg-white">
-  <div className="max-w-[1500px] mx-auto px-5 lg:px-8">
+      <div className="border-y border-gray-200 bg-white">
+        <div className="max-w-[1500px] mx-auto px-5 lg:px-8">
 
-    <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between py-4">
 
-      {/* Mobile Filter */}
-      {!isLarge ? (
-        <button
-          className="
+            {/* Mobile Filter */}
+            {!isLarge ? (
+              <button
+                className="
             flex items-center gap-2
             px-4 py-2
             border border-gray-300
@@ -299,49 +299,49 @@ const Product = () => {
             hover:text-teal-600
             transition
           "
-        >
-          <FilterAlt fontSize="small" />
-          Filters
-        </button>
-      ) : (
-        <div className="text-sm text-gray-500">
-          <span className="font-medium text-gray-800">
-            {totalElements ?? products?.length ?? 0}
-          </span>{" "}
-          products
+              >
+                <FilterAlt fontSize="small" />
+                Filters
+              </button>
+            ) : (
+              <div className="text-sm text-gray-500">
+                <span className="font-medium text-gray-800">
+                  {totalElements ?? products?.length ?? 0}
+                </span>{" "}
+                products
+              </div>
+            )}
+
+            {/* Sort */}
+            <FormControl
+              size="small"
+              sx={{ minWidth: 200 }}
+            >
+              <InputLabel>Sort</InputLabel>
+
+              <Select
+                value={searchParam.get("sort") || ""}
+                label="Sort"
+                onChange={handleSortChange}
+              >
+                <MenuItem value="">
+                  Recommended
+                </MenuItem>
+
+                <MenuItem value="price_low">
+                  Price: Low to High
+                </MenuItem>
+
+                <MenuItem value="price_high">
+                  Price: High to Low
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+          </div>
+
         </div>
-      )}
-
-      {/* Sort */}
-      <FormControl
-        size="small"
-        sx={{ minWidth: 200 }}
-      >
-        <InputLabel>Sort</InputLabel>
-
-        <Select
-          value={searchParam.get("sort") || ""}
-          label="Sort"
-          onChange={handleSortChange}
-        >
-          <MenuItem value="">
-            Recommended
-          </MenuItem>
-
-          <MenuItem value="price_low">
-            Price: Low to High
-          </MenuItem>
-
-          <MenuItem value="price_high">
-            Price: High to Low
-          </MenuItem>
-        </Select>
-      </FormControl>
-
-    </div>
-
-  </div>
-</div>
+      </div>
 
 
       <Divider />
@@ -364,40 +364,40 @@ const Product = () => {
               FILTER SIDEBAR
           ================================== */}
 
-         {isLarge && (
-  <aside className="border-r border-gray-200 pr-6">
+          {isLarge && (
+            <aside className="border-r border-gray-200 pr-6">
 
-    <div className="sticky top-24">
+              <div className="sticky top-24">
 
-      <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-5">
 
-        <h2 className="text-lg font-semibold text-gray-900">
-          Filters
-        </h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Filters
+                  </h2>
 
-        <button
-          onClick={() => {
-            setSearchParam({});
-            setPage(1);
-          }}
-          className="
+                  <button
+                    onClick={() => {
+                      setSearchParam({});
+                      setPage(1);
+                    }}
+                    className="
             text-sm
             font-medium
             text-teal-600
             hover:text-teal-800
           "
-        >
-          CLEAR ALL
-        </button>
+                  >
+                    CLEAR ALL
+                  </button>
 
-      </div>
+                </div>
 
-      <FilterSection />
+                <FilterSection />
 
-    </div>
+              </div>
 
-  </aside>
-)}
+            </aside>
+          )}
 
 
           {/* ==================================
@@ -428,7 +428,7 @@ const Product = () => {
             {/* Product grid */}
 
             {products &&
-            products.length > 0 ? (
+              products.length > 0 ? (
 
               <section
                 className="

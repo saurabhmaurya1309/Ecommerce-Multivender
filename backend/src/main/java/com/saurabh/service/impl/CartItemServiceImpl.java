@@ -17,20 +17,33 @@ public class CartItemServiceImpl  implements CartItemService{
 	}
 	
 	@Override
-	public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws Exception {
-		CartItem item=findCartItemById(id);
-		User cartItemUser=item.getCart().getUser();
-		System.out.println("aslkdnkad"+cartItem.getProduct());
-		if(cartItemUser.getId().equals(userId)) {
-			item.setQuantity(cartItem.getQuantity());
-			item.setMrpPrice(item.getQuantity()*item.getProduct().getMrpPrice());
-			item.setSellingPrice(item.getQuantity()*item.getProduct().getSellingPrice());
-			return cartItemRepository.save(item);
-		}
-		
-		throw new Exception("you can not update this cartitem");
-	}
+	public CartItem updateCartItem(
+	        Long userId,
+	        Long id,
+	        CartItem cartItem) throws Exception {
 
+	    CartItem item = findCartItemById(id);
+
+	    User cartItemUser = item.getCart().getUser();
+
+	    if (cartItemUser.getId().equals(userId)) {
+
+	        item.setQuantity(cartItem.getQuantity());
+
+	        // Prices are PER UNIT
+	        item.setMrpPrice(
+	                item.getProduct().getMrpPrice()
+	        );
+
+	        item.setSellingPrice(
+	                item.getProduct().getSellingPrice()
+	        );
+
+	        return cartItemRepository.save(item);
+	    }
+
+	    throw new Exception("You can not update this cart item");
+	}
 	@Override
 	public void removeCartItem(Long userId, Long cartItemId) throws Exception {
 		CartItem item=findCartItemById(cartItemId);

@@ -232,6 +232,7 @@ const cartSlice = createSlice({
         state.error = null;
 
         if (state.cart) {
+
           state.cart.cartItems =
             state.cart.cartItems.filter(
               (item) =>
@@ -246,6 +247,13 @@ const cartSlice = createSlice({
           state.cart.totalSellingPrice =
             sumCartItemSellingPrice(
               state.cart.cartItems
+            );
+
+          state.cart.totalItem =
+            state.cart.cartItems.reduce(
+              (total, item) =>
+                total + item.quantity,
+              0
             );
         }
       })
@@ -269,6 +277,7 @@ const cartSlice = createSlice({
         state.error = null;
 
         if (state.cart) {
+
           const index =
             state.cart.cartItems.findIndex(
               (item) =>
@@ -276,6 +285,7 @@ const cartSlice = createSlice({
             );
 
           if (index !== -1) {
+
             state.cart.cartItems[index] =
               action.payload;
 
@@ -287,6 +297,13 @@ const cartSlice = createSlice({
             state.cart.totalSellingPrice =
               sumCartItemSellingPrice(
                 state.cart.cartItems
+              );
+
+            state.cart.totalItem =
+              state.cart.cartItems.reduce(
+                (total, item) =>
+                  total + item.quantity,
+                0
               );
           }
         }

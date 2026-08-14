@@ -23,55 +23,78 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public CartItem addCartItem(User user, Product product, String size, int quantity) {
-		Cart cart=finduserCart(user);
-		CartItem isPresent=cartItemRepository.findByCartAndProductAndSize(cart, product, size);
-		if(isPresent==null) {
-			CartItem cartItem = new CartItem();
-			cartItem.setProduct(product);
-			cartItem.setQuantity(quantity);
-			cartItem.setUserId(user.getId());
-			cartItem.setSize(size);
-			int totalPrice=quantity*product.getSellingPrice();
-			cartItem.setSellingPrice(totalPrice);
-			cart.getCartItems().add(cartItem);
-			cartItem.setCart(cart);
-			
-			return cartItemRepository.save(cartItem);
-		}
-		return isPresent;
+	public CartItem addCartItem(User user,Product product, String size, int quantity) {
+	    Cart cart = finduserCart(user);
+	    CartItem existingItem = cartItemRepository.findByCartAndProductAndSize(cart, product,size );
+	    if (existingItem != null) {
+
+	        // Same product + same size already exists
+	    	System.out.println("saurabh");
+	        existingItem.setQuantity(
+	                existingItem.getQuantity() + quantity
+	        );
+
+	        return cartItemRepository.save(existingItem);
+	    }
+
+	    // Create new cart item
+	    CartItem cartItem = new CartItem();
+
+	    cartItem.setCart(cart);
+	    cartItem.setProduct(product);
+	    cartItem.setSize(size);
+	    cartItem.setQuantity(quantity);
+	    cartItem.setUserId(user.getId());
+
+	    // Store price PER UNIT
+	    cartItem.setMrpPrice(product.getMrpPrice());
+	    cartItem.setSellingPrice(product.getSellingPrice());
+
+	    cart.getCartItems().add(cartItem);
+
+	    return cartItemRepository.save(cartItem);
 	}
 
 	@Override
 	public Cart finduserCart(User user) {
-		Cart cart =cartRepository.findByUserId(user.getId());
-		int totalPrice=0;
-		int totalDiscountedPrice=0;
-		int totalItem=0;
-		
-		for (CartItem cartItem : cart.getCartItems()) {
 
-	        Integer mrp = cartItem.getMrpPrice();
-	        Integer selling = cartItem.getSellingPrice();
-	        Integer qty = cartItem.getQuantity();
+	    Cart cart = cartRepository.findByUserId(user.getId());
 
-	        if (mrp != null) {
-	            totalPrice += mrp * (qty != null ? qty : 1);
-	        }
+	    int totalMrpPrice = 0;
+	    int totalSellingPrice = 0;
+	    int totalItem = 0;
 
-	        if (selling != null) {
-	            totalDiscountedPrice += selling * (qty != null ? qty : 1);
-	        }
+	    for (CartItem cartItem : cart.getCartItems()) {
 
-	        if (qty != null) {
-	            totalItem += qty;
-	        }
+	        int quantity = cartItem.getQuantity();
+
+	        int mrpPrice = cartItem.getMrpPrice() != null
+	                ? cartItem.getMrpPrice()
+	                : 0;
+
+	        int sellingPrice = cartItem.getSellingPrice() != null
+	                ? cartItem.getSellingPrice()
+	                : 0;
+
+	        totalMrpPrice += mrpPrice * quantity;
+
+	        totalSellingPrice += sellingPrice * quantity;
+
+	        totalItem += quantity;
 	    }
-		cart.setTotalMrpPrice(totalPrice);
-		cart.setToatalItem(totalItem);
-		cart.setTotalSellingPrice(totalDiscountedPrice);
-		cart.setDiscount(calculateDiscountPercentage(totalPrice,totalDiscountedPrice));
-		return cart;
+
+	    cart.setTotalMrpPrice(totalMrpPrice);
+	    cart.setToatalItem(totalItem);
+	    cart.setTotalSellingPrice(totalSellingPrice);
+
+	    cart.setDiscount(
+	            calculateDiscountPercentage(
+	                    totalMrpPrice,
+	                    totalSellingPrice
+	            )
+	    );
+
+	    return cart;
 	}
 
 	private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {

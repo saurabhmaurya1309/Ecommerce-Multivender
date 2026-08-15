@@ -12,9 +12,11 @@ public interface CartService {
 			Product product,
 			String size,
 			int quantity
-			);
+			) throws Exception;
 	
 	public Cart finduserCart(User user);
+
+	Cart recalculateCart(Cart cart);
 	
 
 }

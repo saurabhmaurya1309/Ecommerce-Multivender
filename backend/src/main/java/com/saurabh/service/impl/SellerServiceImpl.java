@@ -11,10 +11,10 @@ import com.saurabh.domain.AccountStatus;
 import com.saurabh.domain.USER_ROLE;
 import com.saurabh.domain.VerificationPurpose;
 import com.saurabh.exceptions.SellerException;
-import com.saurabh.model.Address;
 import com.saurabh.model.Seller;
+import com.saurabh.model.SellerAddress;
 import com.saurabh.model.VerificationCode;
-import com.saurabh.repository.AddressRepository;
+import com.saurabh.repository.SellerAddressRepository;
 import com.saurabh.repository.SellerRepository;
 import com.saurabh.repository.VerificationCodeRepository;
 import com.saurabh.request.SellerSignupRequest;
@@ -25,16 +25,16 @@ public class SellerServiceImpl implements SellerService {
 	private final SellerRepository sellerRepository;
 	private final JwtProvider jwtProvider;
 	private final PasswordEncoder passwordEncoder;
-	private final AddressRepository addressRepository;
+	private final SellerAddressRepository sellerAddressRepository;
 	private final VerificationCodeRepository verificationCodeRepository;
 	
 	
 
-	public SellerServiceImpl(SellerRepository sellerRepository, JwtProvider jwtProvider,PasswordEncoder passwordEncoder, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository) {
+	public SellerServiceImpl(SellerRepository sellerRepository, JwtProvider jwtProvider,PasswordEncoder passwordEncoder, VerificationCodeRepository verificationCodeRepository, SellerAddressRepository sellerAddressRepository) {
 		this.sellerRepository = sellerRepository;
 		this.jwtProvider = jwtProvider;
 		this.passwordEncoder=passwordEncoder;
-		this.addressRepository = addressRepository;
+		this.sellerAddressRepository = sellerAddressRepository;
 		this.verificationCodeRepository = verificationCodeRepository;
 	}
 
@@ -99,10 +99,10 @@ public class SellerServiceImpl implements SellerService {
 			    seller.getPickupAddress() != null
 			) {
 
-			    Address existingAddress =
+			    SellerAddress existingAddress =
 			        existingSeller.getPickupAddress();
 
-			    Address newAddress =
+			    SellerAddress newAddress =
 			        seller.getPickupAddress();
 
 
@@ -207,12 +207,10 @@ public class SellerServiceImpl implements SellerService {
 	        );
 	    }
 
-	    Address savedAddress =
-	            addressRepository.save(
-	                    req.getPickupAddress()
-	            );
+	  
 
 	    Seller seller = new Seller();
+	    seller.setPickupAddress(req.getPickupAddress());
 
 	    seller.setSellerName(
 	            req.getSellerName()
@@ -236,9 +234,7 @@ public class SellerServiceImpl implements SellerService {
 	            req.getGSTIN()
 	    );
 
-	    seller.setPickupAddress(
-	            savedAddress
-	    );
+	    
 
 	    seller.setBankDetails(
 	            req.getBankDetails()

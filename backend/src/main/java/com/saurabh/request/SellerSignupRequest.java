@@ -1,8 +1,8 @@
 package com.saurabh.request;
 
-import com.saurabh.model.Address;
 import com.saurabh.model.BankDetails;
 import com.saurabh.model.BusinessDetails;
+import com.saurabh.model.SellerAddress;
 
 public class SellerSignupRequest {
 	private String sellerName;
@@ -16,8 +16,8 @@ public class SellerSignupRequest {
     private String mobile;
 
     private String GSTIN;
-
-    private Address pickupAddress;
+    
+    private SellerAddress pickupAddress;
 
     private BankDetails bankDetails;
 
@@ -71,11 +71,11 @@ public class SellerSignupRequest {
 		GSTIN = gSTIN;
 	}
 
-	public Address getPickupAddress() {
+	public SellerAddress getPickupAddress() {
 		return pickupAddress;
 	}
 
-	public void setPickupAddress(Address pickupAddress) {
+	public void setPickupAddress(SellerAddress pickupAddress) {
 		this.pickupAddress = pickupAddress;
 	}
 
@@ -96,7 +96,7 @@ public class SellerSignupRequest {
 	}
 
 	public SellerSignupRequest(String sellerName, String email, String password, String otp, String mobile,
-			String gSTIN, Address pickupAddress, BankDetails bankDetails, BusinessDetails businessDetails) {
+			String gSTIN, SellerAddress pickupAddress, BankDetails bankDetails, BusinessDetails businessDetails) {
 		super();
 		this.sellerName = sellerName;
 		this.email = email;
@@ -113,8 +113,8 @@ public class SellerSignupRequest {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
-    
+
+	
 
 
 }

@@ -1,23 +1,42 @@
-import { Avatar, Box, Button, IconButton, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
+import { Avatar, Badge, Box, Button, IconButton, useMediaQuery, useTheme } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { AddShoppingCart, FavoriteBorder, Storefront } from '@mui/icons-material';
 import CategorySheet from './CategorySheet';
 import { mainLevelCategory } from '../../../data/category/mainLevelCategory';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../../State/Store';
+import { useAppDispatch, useAppSelector } from '../../../State/Store';
+import { fetchUserCart } from '../../../State/customer/CartSlice';
 const Navbar = () => {
     const theme = useTheme();
     const isLarge = useMediaQuery(theme.breakpoints.up('lg'));
     const [selectedCategory, setSelectedCategory] = useState("men");
     const [showCategorySheet, setShowCategorySheet] = useState(false);
     const { auth } = useAppSelector(state => state);
+    const { cart } = useAppSelector(state => state.cart);
+    const cartItemCount = cart?.cartItems?.reduce(
+        (total, item) => total + item.quantity,
+        0
+    ) ?? 0;
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    useEffect(() => {
+
+        if (auth.isLoggedIn) {
+
+            const jwt = localStorage.getItem("jwt");
+
+            if (jwt) {
+                dispatch(fetchUserCart(jwt));
+            }
+        }
+
+    }, [auth.isLoggedIn, dispatch]);
     return (
         <>
             <Box className='bg-white top-0 left-0 right-0 sticky' sx={{ zIndex: 2 }}>
-                <div className='flex items-center justify-between px-5 lg:px-20 h-[70px] border-b'>
+                <div className='flex items-center justify-between px-5 lg:px-25 h-[70px] border-b'>
                     <div className='flex items-center gap-9'>
                         <div className='flex items-center gap-2'>
                             {!isLarge &&
@@ -64,7 +83,22 @@ const Navbar = () => {
                             <FavoriteBorder sx={{ fontSize: 29 }} />
                         </IconButton>
                         <IconButton onClick={() => navigate('/cart')}>
-                            <AddShoppingCart sx={{ fontSize: 29 }} className='text-gray-700' />
+                            <Badge
+                                badgeContent={cartItemCount}
+                                color="primary"
+                                overlap="circular"
+                                sx={{
+                                    '& .MuiBadge-badge': {
+                                        top: 3,
+                                        right: 15,
+                                    },
+                                }}
+                            >
+                                <AddShoppingCart
+                                    sx={{ fontSize: 32 }}
+                                    className='text-gray-700'
+                                />
+                            </Badge>
                         </IconButton>
 
                         {isLarge &&

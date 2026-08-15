@@ -38,7 +38,7 @@ const ProductDeatils = () => {
 
   const { product } = useAppSelector((state) => state.product);
   const { isLoggedIn, jwt } = useAppSelector(state => state.auth);
-  const { loading: cartLoading } = useAppSelector(state => state.cart);
+  const { cart, loading: cartLoading } = useAppSelector(state => state.cart);
 
   // --------------------------------------------------
   // FETCH PRODUCT
@@ -50,13 +50,16 @@ const ProductDeatils = () => {
     console.log("productId - ", productId);
 
     dispatch(fetchProductById(Number(productId)));
+    if (jwt) {
+      dispatch(fetchUserCart(jwt));
+    }
 
     // Reset UI while loading another product
     setSelectedSize(null);
     setSelectedColor(null);
     setQuantity(1);
     setActiveImage(0);
-  }, [productId, dispatch]);
+  }, [productId, dispatch, jwt]);
 
   // --------------------------------------------------
   // SET DEFAULT COLOR + SIZE
@@ -92,6 +95,20 @@ const ProductDeatils = () => {
       (item) => item.size === selectedSize
     )?.quantity ?? 0;
 
+
+
+  const cartQuantityForSelectedSize =
+    cart?.cartItems?.find(
+      (item) =>
+        item.product?.id === product?.id &&
+        item.size === selectedSize
+    )?.quantity ?? 0;
+
+  const remainingStock =
+    Math.max(
+      0,
+      selectedSizeStock - cartQuantityForSelectedSize
+    );
   // --------------------------------------------------
   // CHECK IF ANY SIZE IS AVAILABLE
   // --------------------------------------------------
@@ -107,72 +124,82 @@ const ProductDeatils = () => {
 
   const handleAddToBag = async () => {
 
-  if (!isLoggedIn || !jwt) {
-    navigate("/login", {
-      state: {
-        from: `/product-details/${product?.category?.categoryId}/${product?.title}/${product?.id}`,
-      },
-    });
-
-    return;
-  }
-
-  if (!product) {
-    toast.error("Product not found");
-    return;
-  }
-
-  if (!selectedColor) {
-    toast.error("Please select a color");
-    return;
-  }
-
-  if (!selectedSize) {
-    toast.error("Please select a size");
-    return;
-  }
-
-  if (selectedSizeStock <= 0) {
-    toast.error("Selected size is out of stock");
-    return;
-  }
-
-  if (quantity > selectedSizeStock) {
-    toast.error("Selected quantity is not available");
-    return;
-  }
-
-  try {
-
-    await dispatch(
-      addItemToCart({
-        jwt,
-        request: {
-          productId: Number(product.id),
-          size: selectedSize,
-          quantity,
+    if (!isLoggedIn || !jwt) {
+      navigate("/login", {
+        state: {
+          from: `/product-details/${product?.category?.categoryId}/${product?.title}/${product?.id}`,
         },
-      })
-    ).unwrap();
+      });
 
-    // Get latest cart from backend
-    await dispatch(
-      fetchUserCart(jwt)
-    ).unwrap();
+      return;
+    }
 
-    toast.success("Product added to bag 🛒");
+    if (!product) {
+      toast.error("Product not found");
+      return;
+    }
 
-  } catch (error: any) {
+    if (!selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
 
-    console.error(error);
+    if (!selectedSize) {
+      toast.error("Please select a size");
+      return;
+    }
 
-    toast.error(
-      error?.error ||
-      error?.message ||
-      "Unable to add product to cart"
-    );
-  }
-};
+    if (selectedSizeStock <= 0) {
+      toast.error("Selected size is out of stock");
+      return;
+    }
+
+    if (remainingStock <= 0) {
+      toast.error(
+        "You already have the maximum available quantity in your cart"
+      );
+      return;
+    }
+
+    if (quantity > remainingStock) {
+      toast.error(
+        `Only ${remainingStock} more item${remainingStock > 1 ? "s are" : " is"
+        } available`
+      );
+      return;
+    }
+
+    try {
+
+      await dispatch(
+        addItemToCart({
+          jwt,
+          request: {
+            productId: Number(product.id),
+            size: selectedSize,
+            quantity,
+          },
+        })
+      ).unwrap();
+
+      // Get latest cart from backend
+      await dispatch(
+        fetchUserCart(jwt)
+      ).unwrap();
+
+      toast.success("Product added to bag 🛒");
+
+    } catch (error: any) {
+
+      console.error(error);
+
+      toast.error(
+        error?.error ||
+        error?.message ||
+        "Unable to add product to cart"
+      );
+    }
+  };
 
   // --------------------------------------------------
   // WISHLIST
@@ -685,13 +712,13 @@ const ProductDeatils = () => {
                 disabled={
                   !selectedSize ||
                   selectedSizeStock <= 0 ||
-                  quantity >= selectedSizeStock
+                  quantity >= remainingStock
                 }
                 onClick={() =>
                   setQuantity((prev) =>
                     Math.min(
                       prev + 1,
-                      selectedSizeStock
+                      remainingStock
                     )
                   )
                 }
@@ -721,8 +748,11 @@ const ProductDeatils = () => {
 
             {selectedSize && selectedSizeStock > 0 && (
               <p className="text-xs text-gray-500 mt-2">
-                {selectedSizeStock} items available in size{" "}
-                {selectedSize}
+                {remainingStock > 0
+                  ? `${remainingStock} more item${remainingStock > 1 ? "s" : ""
+                  } available in size ${selectedSize}`
+                  : `Maximum available quantity already in your cart`
+                }
               </p>
             )}
 
@@ -744,7 +774,8 @@ const ProductDeatils = () => {
               disabled={
                 cartLoading ||
                 !selectedSize ||
-                selectedSizeStock <= 0
+                selectedSizeStock <= 0 ||
+                remainingStock <= 0
               }
               sx={{
                 py: "1rem",

@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.razorpay.PaymentLink;
 import com.saurabh.domain.PaymentMethod;
-import com.saurabh.model.Address;
 import com.saurabh.model.Cart;
+import com.saurabh.model.CustomerAddress;
 import com.saurabh.model.Order;
 import com.saurabh.model.OrderItem;
 import com.saurabh.model.PaymentOrder;
@@ -59,7 +59,7 @@ public class OrderController {
 
 	@PostMapping()
 	public ResponseEntity<PaymentLinkResponse>createOrderhandler(
-			@RequestBody Address shippingAddress,
+			@RequestBody CustomerAddress shippingAddress,
 			@RequestParam PaymentMethod paymentMethod,
 			@RequestHeader("Authorization") String jwt) throws Exception{
 		

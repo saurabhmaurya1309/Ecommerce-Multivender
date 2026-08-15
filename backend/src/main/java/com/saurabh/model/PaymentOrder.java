@@ -32,8 +32,8 @@ public class PaymentOrder {
 	@ManyToOne
 	private User user;
 	
-	@OneToMany
-	private Set<Order>orders = new HashSet<>();
+	@OneToMany(mappedBy = "paymentOrder")
+	private Set<Order> orders = new HashSet<>();
 
 	public Long getId() {
 		return id;

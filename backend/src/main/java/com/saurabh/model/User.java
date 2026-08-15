@@ -1,13 +1,13 @@
 package com.saurabh.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.saurabh.domain.USER_ROLE;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,12 +30,16 @@ public class User {
 	
 	private String mobile;
 	
+	
 	private USER_ROLE role= USER_ROLE.ROLE_CUSTOMER;
 	
 	private boolean emailVerified = false;
-	
-	@OneToMany
-	private Set<Address>addresses =new HashSet<>();
+	@OneToMany(
+		    mappedBy = "user",
+		    cascade = CascadeType.ALL,
+		    orphanRemoval = true
+		)
+		private Set<CustomerAddress> addresses = new HashSet<>();
 	
 	@ManyToMany
 	@JsonIgnore
@@ -97,11 +101,11 @@ public class User {
 		this.emailVerified = emailVerified;
 	}
 
-	public Set<Address> getAddresses() {
+	public Set<CustomerAddress> getAddresses() {
 		return addresses;
 	}
 
-	public void setAddresses(Set<Address> addresses) {
+	public void setAddresses(Set<CustomerAddress> addresses) {
 		this.addresses = addresses;
 	}
 
@@ -113,13 +117,8 @@ public class User {
 		this.usedCoupons = usedCoupons;
 	}
 
-	public User() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public User(Long id, String password, String email, String fullName, String mobile, USER_ROLE role,
-			boolean emailVerified, Set<Address> addresses, Set<Coupon> usedCoupons) {
+			boolean emailVerified, Set<CustomerAddress> addresses, Set<Coupon> usedCoupons) {
 		super();
 		this.id = id;
 		this.password = password;
@@ -132,13 +131,12 @@ public class User {
 		this.usedCoupons = usedCoupons;
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", password=" + password + ", email=" + email + ", fullName=" + fullName + ", mobile="
-				+ mobile + ", role=" + role + ", emailVerified=" + emailVerified + ", addresses=" + addresses
-				+ ", usedCoupons=" + usedCoupons + "]";
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
+	
 	
 	
 	

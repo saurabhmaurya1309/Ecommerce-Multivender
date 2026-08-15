@@ -3,12 +3,14 @@ package com.saurabh.model;
 import com.saurabh.domain.AccountStatus;
 import com.saurabh.domain.USER_ROLE;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -34,8 +36,9 @@ public class Seller {
 	@Embedded
 	private BankDetails bankDetails = new BankDetails(); 
 	
-	@OneToOne
-	private Address pickupAddress = new Address();
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "pickup_address_id")
+	private SellerAddress pickupAddress;
 	
 	private String GSTIN;
 	
@@ -101,11 +104,11 @@ public class Seller {
 		this.bankDetails = bankDetails;
 	}
 
-	public Address getPickupAddress() {
+	public SellerAddress getPickupAddress() {
 		return pickupAddress;
 	}
 
-	public void setPickupAddress(Address pickupAddress) {
+	public void setPickupAddress(SellerAddress pickupAddress) {
 		this.pickupAddress = pickupAddress;
 	}
 
@@ -141,16 +144,13 @@ public class Seller {
 		this.accountStatus = accountStatus;
 	}
 
-	@Override
-	public String toString() {
-		return "Seller [id=" + id + ", sellerName=" + sellerName + ", mobile=" + mobile + ", email=" + email
-				+ ", password=" + password + ", businessDetails=" + businessDetails + ", bankDetails=" + bankDetails
-				+ ", pickupAddress=" + pickupAddress + ", GSTIN=" + GSTIN + ", role=" + role + ", emailVerified="
-				+ emailVerified + ", accountStatus=" + accountStatus + "]";
+	public Seller() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public Seller(Long id, String sellerName, String mobile, String email, String password,
-			BusinessDetails businessDetails, BankDetails bankDetails, Address pickupAddress, String gSTIN,
+			BusinessDetails businessDetails, BankDetails bankDetails, SellerAddress pickupAddress, String gSTIN,
 			USER_ROLE role, boolean emailVerified, AccountStatus accountStatus) {
 		super();
 		this.id = id;
@@ -167,10 +167,9 @@ public class Seller {
 		this.accountStatus = accountStatus;
 	}
 
-	public Seller() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	
+
+	
 
 	
 	

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Order, OrderItem, OrderState } from "../../types/orderTypes";
 import { api } from "../../config/Api";
-import { Address } from "../../types/UserTypes";
+import { CustomerAddress } from "../../types/UserTypes";
 
 
 const API_URL = "/api/orders";
@@ -48,7 +48,7 @@ export const fetchOrderById =  createAsyncThunk<Order, { orderId: number;jwt: st
     }
 );
 
-export  const createOrder = createAsyncThunk<any, { address: Address; jwt: string ,paymentGateway: string}>(
+export  const createOrder = createAsyncThunk<any, { address: CustomerAddress; jwt: string ,paymentGateway: string}>(
     'orders/createOrder',
     async ({ address, jwt, paymentGateway }, {rejectWithValue}) => {
         try {

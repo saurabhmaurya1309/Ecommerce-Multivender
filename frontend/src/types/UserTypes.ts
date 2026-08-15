@@ -1,4 +1,4 @@
-export interface Address {
+export interface CustomerAddress {
     id?:number;
     name:string;
     mobile:string;
@@ -19,5 +19,5 @@ export interface User{
     email:string;
     fullName?:string;
     role:UserRole;
-    addresses?:Address[];
+    addresses?:CustomerAddress[];
 }

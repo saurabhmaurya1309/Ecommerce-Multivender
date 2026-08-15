@@ -211,7 +211,7 @@ public class AuthServiceImpl implements AuthService {
 			throw new Exception("Seller not found");
 		}
 
-		if (!seller.emailVerified()) {
+		if (!seller.isEmailVerified()) {
 			throw new Exception("Please verify your email first");
 		}
 

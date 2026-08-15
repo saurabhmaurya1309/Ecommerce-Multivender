@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -14,6 +15,7 @@ public class SellerReport {
 	private Long id;
 	
 	@OneToOne
+	@JoinColumn(name = "seller_id", unique = true)
 	private Seller seller;
 	
 	private Long totalEarnings = 0L;

@@ -1,9 +1,8 @@
 import { Box, Button, FormControlLabel, Modal, Radio, RadioGroup } from '@mui/material'
 import React, { useState } from 'react'
-import AddressCard from './AddressCard'
-import AddressForm from './AddressForm';
 import PricingCard from '../Cart/PricingCard';
 import { useAppSelector } from '../../../State/Store';
+import AddressCard from '../../components/address/AddressCard';
 
 const style = {
     position: 'absolute',
@@ -53,11 +52,11 @@ const Checkout = () => {
                         </div>
                         <div className='text-xs font-medium space-y-5'>
                             <p>Saved Address</p>
-                            <div className='flex flex-col gap-2'>
+                            {/* <div className='flex flex-col gap-2'>
                                 {[1, 1, 1].map((item, index) => (
                                     <AddressCard />
                                 ))}
-                            </div>
+                            </div> */}
 
                         </div>
                         <div className='py-4 px-5 rounded-md border'>
@@ -106,16 +105,16 @@ const Checkout = () => {
 
 
             </div>
-            <Modal
+            {/* <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                {/* <Box sx={style}>
                     <AddressForm  paymentGateway={paymentGateway}/>
-                </Box>
-            </Modal>
+                </Box> */}
+            {/* </Modal> */} 
         </>
     )
 }

@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../config/Api";
-import { User } from "../types/UserTypes";
+import { CustomerAddress, User } from "../types/UserTypes";
 import { isTokenExpired } from "../utils/jwt";
+import { resetCartState } from "./customer/CartSlice";
 
 /* =======================
    SEND OTP
@@ -138,8 +139,9 @@ export const sellerRegister = createAsyncThunk(
 ======================= */
 export const logout = createAsyncThunk(
   "/auth/logout",
-  async (navigate: any) => {
+  async (navigate: any, { dispatch }: { dispatch: any }) => {
     localStorage.clear();
+    dispatch(resetCartState());
     navigate("/");
   }
 );
@@ -212,6 +214,70 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
+
+export const addAddress = createAsyncThunk(
+  "/auth/addAddress",
+  async (address: CustomerAddress, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        "/users/addresses",
+        address
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
+    }
+  }
+);
+
+
+export const updateAddress = createAsyncThunk(
+  "/auth/updateAddress",
+  async (
+    request: {
+      id: number;
+      address: CustomerAddress;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.put(
+        `/users/addresses/${request.id}`,
+        request.address
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
+    }
+  }
+);
+
+export const deleteAddress = createAsyncThunk(
+  "/auth/deleteAddress",
+  async (
+    addressId: number,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.delete(
+        `/users/addresses/${addressId}`
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
+    }
+  }
+);
+
 /* =======================
    STATE
 ======================= */
@@ -220,9 +286,11 @@ const getRoleFromToken = (
   token: string
 ): "USER" | "SELLER" | "ADMIN" | null => {
   try {
+    console.log("Token:", token);
     const payload = JSON.parse(
       atob(token.split(".")[1])
     );
+    console.log("Decoded Payload:", payload);
 
     const authorities = payload.authorities || "";
 
@@ -326,6 +394,17 @@ const authSlice = createSlice({
 
       /* FETCH PROFILE */
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+
+      .addCase(addAddress.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+      .addCase(updateAddress.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+
+      .addCase(deleteAddress.fulfilled, (state, action) => {
         state.user = action.payload;
       })
 

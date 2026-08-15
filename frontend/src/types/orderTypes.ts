@@ -1,5 +1,5 @@
 import { Product } from "./ProductTypes";
-import { Address, User } from "./UserTypes";
+import { CustomerAddress, User } from "./UserTypes";
 
 export interface OrderState {
     orders: Order[];
@@ -17,7 +17,7 @@ export interface Order {
     sellerId: number;
     orderItems: OrderItem[];
     orderDate: string;
-    shippingAddress: Address;
+    shippingAddress: CustomerAddress;
     paymentDetails: any;
     totalMrpPrice: number;
     totalSellingPrice?: number;

@@ -1,65 +1,153 @@
 package com.saurabh.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.saurabh.model.Cart;
 import com.saurabh.model.CartItem;
+import com.saurabh.model.Product;
 import com.saurabh.model.User;
 import com.saurabh.repository.CartItemRepository;
 import com.saurabh.service.CartItemService;
+import com.saurabh.service.CartService;
+
 @Service
-public class CartItemServiceImpl  implements CartItemService{
-	
-	private final CartItemRepository cartItemRepository;
+public class CartItemServiceImpl implements CartItemService {
 
-	public CartItemServiceImpl(CartItemRepository cartItemRepository) {
-		super();
-		this.cartItemRepository = cartItemRepository;
-	}
-	
-	@Override
-	public CartItem updateCartItem(
-	        Long userId,
-	        Long id,
-	        CartItem cartItem) throws Exception {
+    private final CartItemRepository cartItemRepository;
+    private final CartService cartService;
 
-	    CartItem item = findCartItemById(id);
+    public CartItemServiceImpl(
+            CartItemRepository cartItemRepository,
+            CartService cartService) {
 
-	    User cartItemUser = item.getCart().getUser();
+        this.cartItemRepository = cartItemRepository;
+        this.cartService = cartService;
+    }
 
-	    if (cartItemUser.getId().equals(userId)) {
+    @Override
+    @Transactional
+    public CartItem updateCartItem(
+            Long userId,
+            Long id,
+            CartItem cartItem) throws Exception {
 
-	        item.setQuantity(cartItem.getQuantity());
+        CartItem item =
+                findCartItemById(id);
 
-	        // Prices are PER UNIT
-	        item.setMrpPrice(
-	                item.getProduct().getMrpPrice()
-	        );
+        User cartItemUser =
+                item.getCart().getUser();
 
-	        item.setSellingPrice(
-	                item.getProduct().getSellingPrice()
-	        );
+        if (!cartItemUser.getId().equals(userId)) {
+            throw new Exception(
+                    "You can not update this cart item"
+            );
+        }
 
-	        return cartItemRepository.save(item);
-	    }
+        int requestedQuantity =
+                cartItem.getQuantity();
 
-	    throw new Exception("You can not update this cart item");
-	}
-	@Override
-	public void removeCartItem(Long userId, Long cartItemId) throws Exception {
-		CartItem item=findCartItemById(cartItemId);
-		User cartItemUser=item.getCart().getUser();
-		if(cartItemUser.getId().equals(userId)) {
-			cartItemRepository.delete(item);
-		}
-		else throw new Exception("you can not delete this item");
-		
-	}
+        if (requestedQuantity <= 0) {
+            throw new Exception(
+                    "Quantity must be greater than 0"
+            );
+        }
 
-	@Override
-	public CartItem findCartItemById(Long id) throws Exception {
-		
-		return cartItemRepository.findById(id).orElseThrow(()->
-					new Exception("cart item not found with id "+id));
-	}
+        Product product =
+                item.getProduct();
 
+        String size =
+                item.getSize();
+
+        int availableStock =
+                product.getSizeQuantities()
+                        .stream()
+                        .filter(sizeQuantity ->
+                                sizeQuantity.getSize()
+                                        .equalsIgnoreCase(size))
+                        .mapToInt(sizeQuantity ->
+                                sizeQuantity.getQuantity())
+                        .findFirst()
+                        .orElse(0);
+
+        if (availableStock <= 0) {
+            throw new Exception(
+                    "Selected size " + size +
+                    " is out of stock"
+            );
+        }
+
+        if (requestedQuantity > availableStock) {
+            throw new Exception(
+                    "Only " + availableStock +
+                    " items are available for size "
+                    + size
+            );
+        }
+
+        item.setQuantity(
+                requestedQuantity
+        );
+
+        item.setMrpPrice(
+                product.getMrpPrice()
+        );
+
+        item.setSellingPrice(
+                product.getSellingPrice()
+        );
+
+        CartItem savedItem =
+                cartItemRepository.save(item);
+
+        // Synchronize cart totals
+        cartService.recalculateCart(
+                item.getCart()
+        );
+
+        return savedItem;
+    }
+
+    @Override
+    @Transactional
+    public void removeCartItem(
+            Long userId,
+            Long cartItemId) throws Exception {
+
+        CartItem item =
+                findCartItemById(cartItemId);
+
+        User cartItemUser =
+                item.getCart().getUser();
+
+        if (!cartItemUser.getId().equals(userId)) {
+            throw new Exception(
+                    "You can not delete this item"
+            );
+        }
+
+        Cart cart =
+                item.getCart();
+
+        cartItemRepository.delete(item);
+
+        // Keep in-memory collection consistent
+        cart.getCartItems().remove(item);
+
+        // Synchronize cart totals
+        cartService.recalculateCart(cart);
+    }
+
+    @Override
+    public CartItem findCartItemById(Long id)
+            throws Exception {
+
+        return cartItemRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new Exception(
+                                "cart item not found with id "
+                                + id
+                        ));
+    }
 }

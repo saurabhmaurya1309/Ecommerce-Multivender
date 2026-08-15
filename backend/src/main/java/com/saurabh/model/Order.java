@@ -10,11 +10,14 @@ import com.saurabh.domain.PaymentStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -27,18 +30,23 @@ public class Order {
 	
 	private String orderId;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
 	private Long sellerId;
 	
+	@ManyToOne
+	@JoinColumn(name = "payment_order_id")
+	private PaymentOrder paymentOrder;
 	
 	
 	@OneToMany(mappedBy = "order",cascade =CascadeType.ALL,orphanRemoval =true)
 	private List<OrderItem>orderItems=new ArrayList<>();
 	
-	@ManyToOne
-	private Address shippingAddress;
+	@OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+	@JoinColumn(name = "shipping_address_id")
+	private OrderAddress shippingAddress;
 	
 	@Embedded
 	private PaymentDetails paymentDetails = new PaymentDetails();
@@ -91,6 +99,14 @@ public class Order {
 		this.sellerId = sellerId;
 	}
 
+	public PaymentOrder getPaymentOrder() {
+		return paymentOrder;
+	}
+
+	public void setPaymentOrder(PaymentOrder paymentOrder) {
+		this.paymentOrder = paymentOrder;
+	}
+
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
 	}
@@ -99,11 +115,11 @@ public class Order {
 		this.orderItems = orderItems;
 	}
 
-	public Address getShippingAddress() {
+	public OrderAddress getShippingAddress() {
 		return shippingAddress;
 	}
 
-	public void setShippingAddress(Address shippingAddress) {
+	public void setShippingAddress(OrderAddress shippingAddress) {
 		this.shippingAddress = shippingAddress;
 	}
 
@@ -179,15 +195,21 @@ public class Order {
 		this.deliverDate = deliverDate;
 	}
 
-	public Order(Long id, String orderId, User user, Long sellerId, List<OrderItem> orderItems, Address shippingAddress,
-			PaymentDetails paymentDetails, double totalMrpPrice, Integer totalSellingPrice, Integer discount,
-			OrderStatus orderStatus, int totalItem, PaymentStatus paymentStatus, LocalDateTime orderDate,
-			LocalDateTime deliverDate) {
+	public Order() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Order(Long id, String orderId, User user, Long sellerId, PaymentOrder paymentOrder,
+			List<OrderItem> orderItems, OrderAddress shippingAddress, PaymentDetails paymentDetails,
+			double totalMrpPrice, Integer totalSellingPrice, Integer discount, OrderStatus orderStatus, int totalItem,
+			PaymentStatus paymentStatus, LocalDateTime orderDate, LocalDateTime deliverDate) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
 		this.user = user;
 		this.sellerId = sellerId;
+		this.paymentOrder = paymentOrder;
 		this.orderItems = orderItems;
 		this.shippingAddress = shippingAddress;
 		this.paymentDetails = paymentDetails;
@@ -201,20 +223,9 @@ public class Order {
 		this.deliverDate = deliverDate;
 	}
 
-	public Order() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	
 
-	@Override
-	public String toString() {
-		return "Order [id=" + id + ", orderId=" + orderId + ", user=" + user + ", sellerId=" + sellerId
-				+ ", orderItems=" + orderItems + ", shippingAddress=" + shippingAddress + ", paymentDetails="
-				+ paymentDetails + ", totalMrpPrice=" + totalMrpPrice + ", totalSellingPrice=" + totalSellingPrice
-				+ ", discount=" + discount + ", orderStatus=" + orderStatus + ", totalItem=" + totalItem
-				+ ", paymentStatus=" + paymentStatus + ", orderDate=" + orderDate + ", deliverDate=" + deliverDate
-				+ "]";
-	}
+	
 
 	
 	

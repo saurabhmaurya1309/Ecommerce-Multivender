@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
@@ -18,13 +20,16 @@ public class Transaction {
 	private Long id;
 	
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customer_id")
 	private User customer;
-	
+
 	@OneToOne
+	@JoinColumn(name = "order_id", unique = true)
 	private Order order;
-	
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "seller_id")
 	private Seller seller;
 	
 	private LocalDateTime date = LocalDateTime.now();

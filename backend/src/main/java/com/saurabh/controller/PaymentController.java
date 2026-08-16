@@ -46,30 +46,137 @@ public class PaymentController {
 	
 	
 	@GetMapping("/{paymentId}")
-	public ResponseEntity<ApiResponse> paymentSuccesshandler(@PathVariable String paymentId,
-			@RequestParam String paymentLinkId,
-			@RequestHeader("Authorization") String jwt) throws Exception {
-		User user=userService.findUserByJwtToken(jwt);
-		PaymentLinkResponse paymentLinkResponse;
-		PaymentOrder paymentOrder = paymentService.getPaymentOrderByPaymentId(paymentLinkId);
-		
-		boolean paymentSuccess =paymentService.proceedPaymnetOrder(paymentOrder, paymentId, paymentLinkId);
-		if(paymentSuccess) {
-			for(Order order:paymentOrder.getOrders()) {
-				transactionService.createTransaction(order);
-				Seller seller =sellerService.getSellerById(order.getSellerId());
-				SellerReport report =sellerReportService.getSellerReport(seller);
-				report.setTotalOrders(report.getTotalOrders()+1);
-				report.setTotalEarnings(report.getTotalEarnings()+order.getTotalSellingPrice());
-				report.setTotalSales(report.getTotalSales()+order.getOrderItems().size());
-				sellerReportService.updateSellerReport(report);
-			}
-			
-		}
-		ApiResponse res = new ApiResponse();
-		res.setMessage("Payment successful");
-		
-		return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
+	public ResponseEntity<ApiResponse> paymentSuccesshandler(
+
+	        @PathVariable String paymentId,
+
+	        @RequestParam String paymentLinkId,
+
+	        @RequestParam String paymentLinkReferenceId,
+
+	        @RequestParam String paymentLinkStatus,
+
+	        @RequestParam String signature,
+
+	        @RequestHeader("Authorization") String jwt
+
+	) throws Exception {
+
+	    System.out.println(
+	            "========== PAYMENT SUCCESS =========="
+	    );
+
+	    System.out.println(
+	            "Payment ID: " + paymentId
+	    );
+
+	    System.out.println(
+	            "Payment Link ID: " + paymentLinkId
+	    );
+
+	    System.out.println(
+	            "Payment Link Reference ID: "
+	                    + paymentLinkReferenceId
+	    );
+
+	    System.out.println(
+	            "Payment Link Status: "
+	                    + paymentLinkStatus
+	    );
+
+	    // ============================================
+	    // Find PaymentOrder
+	    // ============================================
+
+	    PaymentOrder paymentOrder =
+	            paymentService.getPaymentOrderByPaymentId(
+	                    paymentLinkId
+	            );
+
+	    // ============================================
+	    // Verify + complete payment
+	    // ============================================
+
+	    boolean paymentSuccess =
+	            paymentService.proceedPaymnetOrder(
+	                    paymentOrder,
+	                    paymentId,
+	                    paymentLinkId,
+	                    paymentLinkReferenceId,
+	                    paymentLinkStatus,
+	                    signature
+	            );
+
+	    // ============================================
+	    // Only after successful payment
+	    // create seller transactions/reports
+	    // ============================================
+
+	    if (paymentSuccess) {
+
+	        for (Order order :
+	                paymentOrder.getOrders()) {
+
+	            transactionService.createTransaction(
+	                    order
+	            );
+
+	            Seller seller =
+	                    sellerService.getSellerById(
+	                            order.getSellerId()
+	                    );
+
+	            SellerReport report =
+	                    sellerReportService.getSellerReport(
+	                            seller
+	                    );
+
+	            report.setTotalOrders(
+	                    report.getTotalOrders() + 1
+	            );
+
+	            report.setTotalEarnings(
+	                    report.getTotalEarnings()
+	                            + order.getTotalSellingPrice()
+	            );
+
+	            report.setTotalSales(
+	                    report.getTotalSales()
+	                            + order.getOrderItems().size()
+	            );
+
+	            sellerReportService
+	                    .updateSellerReport(report);
+	        }
+
+	        ApiResponse res =
+	                new ApiResponse();
+
+	        res.setMessage(
+	                "Payment successful"
+	        );
+
+	        return new ResponseEntity<>(
+	                res,
+	                HttpStatus.ACCEPTED
+	        );
+	    }
+
+	    // ============================================
+	    // Payment verification failed
+	    // ============================================
+
+	    ApiResponse res =
+	            new ApiResponse();
+
+	    res.setMessage(
+	            "Payment verification failed"
+	    );
+
+	    return new ResponseEntity<>(
+	            res,
+	            HttpStatus.BAD_REQUEST
+	    );
 	}
 	
 

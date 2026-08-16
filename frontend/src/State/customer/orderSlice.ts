@@ -48,25 +48,57 @@ export const fetchOrderById =  createAsyncThunk<Order, { orderId: number;jwt: st
     }
 );
 
-export  const createOrder = createAsyncThunk<any, { address: CustomerAddress; jwt: string ,paymentGateway: string}>(
-    'orders/createOrder',
-    async ({ address, jwt, paymentGateway }, {rejectWithValue}) => {
+export const createOrder = createAsyncThunk<
+    any,
+    {
+        address: CustomerAddress;
+        jwt: string;
+        paymentGateway: string;
+    },
+    {
+        rejectValue: string;
+    }
+>(
+    "orders/createOrder",
+    async (
+        { address, jwt, paymentGateway },
+        { rejectWithValue }
+    ) => {
+
         try {
-            const response = await api.post<any>(`${API_URL}`, address, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`
-                },
-                params: {
-                    paymentGateway: paymentGateway
+
+            const response = await api.post(
+                `${API_URL}`,
+                address,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                    params: {
+                        paymentMethod: paymentGateway,
+                    },
                 }
-            });
-            console.log("Order Response:", response.data);
-            if(response.data.payment_link_url){
-                window.location.href = response.data.payment_link_url;
-            }
+            );
+
+            console.log(
+                "Create Order Response:",
+                response.data
+            );
+
             return response.data;
+
         } catch (error: any) {
-            return rejectWithValue(error.response.data.error || 'Failed to create order');
+
+            console.error(
+                "Create Order Error:",
+                error.response?.data || error
+            );
+
+            return rejectWithValue(
+                error.response?.data?.error ||
+                error.response?.data?.message ||
+                "Failed to create order"
+            );
         }
     }
 );
@@ -86,24 +118,66 @@ export const fecthOrderItemById = createAsyncThunk<OrderItem, { orderItemId: num
     }
 );
 
-export const paymentSuccess = createAsyncThunk<any, {paymentId: string, jwt: string,paymentLinkId: string},{rejectValue: string}>(
-    'orders/paymentSuccess',
-    async ({ paymentId, jwt,paymentLinkId }, { rejectWithValue }) => {
-        try {   
-            const response = await api.get(`${API_URL}/payment/${paymentId}`,{
-                headers: {
-                    'Authorization': `Bearer ${jwt}`
-                },
-                params:{
-                    paymentLinkId: paymentLinkId
-                }
-            });
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response.data.error || 'Payment verification failed');
-        }       
+export const paymentSuccess = createAsyncThunk<
+    any,
+    {
+        paymentId: string;
+        jwt: string;
+        paymentLinkId: string;
+        paymentLinkReferenceId: string;
+        paymentLinkStatus: string;
+        signature: string;
+    },
+    {
+        rejectValue: string;
     }
-);  
+>(
+    "orders/paymentSuccess",
+    async (
+        {
+            paymentId,
+            jwt,
+            paymentLinkId,
+            paymentLinkReferenceId,
+            paymentLinkStatus,
+            signature,
+        },
+        { rejectWithValue }
+    ) => {
+        try {
+
+            const response = await api.get(
+                `/api/payment/${paymentId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                    params: {
+                        paymentLinkId,
+                        paymentLinkReferenceId,
+                        paymentLinkStatus,
+                        signature,
+                    },
+                }
+            );
+
+            return response.data;
+
+        } catch (error: any) {
+
+            console.error(
+                "Payment verification error:",
+                error.response?.data || error
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                "Payment verification failed"
+            );
+        }
+    }
+); 
 export const cancelOrder = createAsyncThunk<Order,any>(
     'orders/cancelOrder',
     async (orderId, {rejectWithValue}) => {

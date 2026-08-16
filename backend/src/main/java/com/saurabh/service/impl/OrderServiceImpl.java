@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -73,21 +74,40 @@ public class OrderServiceImpl implements OrderService {
 	        Long sellerId = entry.getKey();
 	        List<CartItem> items = entry.getValue();
 
-	        int totalOrderPrice = items.stream()
-	                .mapToInt(CartItem::getSellingPrice)
+	        int totalSellingPrice = items.stream()
+	                .mapToInt(item ->
+	                        item.getSellingPrice() * item.getQuantity()
+	                )
+	                .sum();
+
+	        double totalMrpPrice = items.stream()
+	                .mapToDouble(item ->
+	                        item.getMrpPrice() * item.getQuantity()
+	                )
 	                .sum();
 
 	        int totalItem = items.stream()
 	                .mapToInt(CartItem::getQuantity)
 	                .sum();
-
 	        Order createdOrder = new Order();
+	        createdOrder.setOrderId(
+	                "ORD-" + UUID.randomUUID()
+	        );
 
 	        createdOrder.setUser(user);
 	        createdOrder.setSellerId(sellerId);
 	        createdOrder.setTotalItem(totalItem);
-	        createdOrder.setTotalSellingPrice(totalOrderPrice);
-	        createdOrder.setTotalMrpPrice(totalOrderPrice);
+	        createdOrder.setTotalSellingPrice(
+	                totalSellingPrice
+	        );
+
+	        createdOrder.setTotalMrpPrice(
+	                totalMrpPrice
+	        );
+
+	        createdOrder.setDiscount(
+	                (int) (totalMrpPrice - totalSellingPrice)
+	        );
 
 	        // IMPORTANT
 	        createdOrder.setShippingAddress(savedAddress);

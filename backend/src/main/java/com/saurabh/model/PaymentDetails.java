@@ -2,6 +2,9 @@ package com.saurabh.model;
 
 import com.saurabh.domain.PaymentStatus;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class PaymentDetails {
 	
 	private String paymentId;
@@ -12,7 +15,6 @@ public class PaymentDetails {
 	
 	private String razorpayPaymentLinkStatus;
 	
-	private String razorpayPaymentIdZWSP;
 	
 	private PaymentStatus status;
 
@@ -48,13 +50,7 @@ public class PaymentDetails {
 		this.razorpayPaymentLinkStatus = razorpayPaymentLinkStatus;
 	}
 
-	public String getRazorpayPaymentIdZWSP() {
-		return razorpayPaymentIdZWSP;
-	}
-
-	public void setRazorpayPaymentIdZWSP(String razorpayPaymentIdZWSP) {
-		this.razorpayPaymentIdZWSP = razorpayPaymentIdZWSP;
-	}
+	
 
 	public PaymentStatus getStatus() {
 		return status;
@@ -65,13 +61,12 @@ public class PaymentDetails {
 	}
 
 	public PaymentDetails(String paymentId, String razorpayPaymentLinkId, String razorpayPaymentLinkReferenceId,
-			String razorpayPaymentLinkStatus, String razorpayPaymentIdZWSP, PaymentStatus status) {
+			String razorpayPaymentLinkStatus, PaymentStatus status) {
 		super();
 		this.paymentId = paymentId;
 		this.razorpayPaymentLinkId = razorpayPaymentLinkId;
 		this.razorpayPaymentLinkReferenceId = razorpayPaymentLinkReferenceId;
 		this.razorpayPaymentLinkStatus = razorpayPaymentLinkStatus;
-		this.razorpayPaymentIdZWSP = razorpayPaymentIdZWSP;
 		this.status = status;
 	}
 

@@ -62,14 +62,18 @@ public class OrderController {
 			@RequestBody CustomerAddress shippingAddress,
 			@RequestParam PaymentMethod paymentMethod,
 			@RequestHeader("Authorization") String jwt) throws Exception{
+		System.out.println("saurbah order=>>>>>>>>>");
 		
 		User user=userService.findUserByJwtToken(jwt);
 		Cart cart=cartService.finduserCart(user);
 		Set<Order> orders=orderService.createOrder(user, shippingAddress, cart);
-		PaymentOrder paymentOrder=paymentService.createOrder(user, orders);
+		PaymentOrder paymentOrder=paymentService.createOrder(user, orders,paymentMethod);
+		System.out.println("Ok1");
+	
 		
 		PaymentLinkResponse res= new PaymentLinkResponse();
 		if(paymentMethod.equals(PaymentMethod.RAZORPAY)) {
+			System.out.println("Ok2");
 			PaymentLink payment=paymentService.createRazorpayPaymentLink(user, paymentOrder.getAmount(), paymentOrder.getId());
 			String paymentUrl=payment.get("short_url");
 			String paymentUrlId=payment.get("id");
@@ -83,6 +87,7 @@ public class OrderController {
 			res.setPayment_link_url(paymentUrl);
 			
 		}
+		System.out.println("Ok3");
 		
 		return new ResponseEntity<>(res,HttpStatus.OK);
 		

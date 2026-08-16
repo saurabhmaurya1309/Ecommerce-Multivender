@@ -14,7 +14,7 @@ const AddressCard = ({
 }: AddressCardProps) => {
 
   return (
-    <div className="p-5 border rounded-md flex justify-between">
+    <div className="p-2 flex justify-between border border-gray-300 rounded-md hover:shadow-md cursor-pointer">
 
       <div className="space-y-3">
 
@@ -38,7 +38,10 @@ const AddressCard = ({
 
         <button
           type="button"
-          onClick={() => onEdit(address)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(address);
+          }}
           className="px-4 py-2 border border-teal-600 text-teal-600 rounded-md hover:bg-teal-50"
         >
           Edit
@@ -46,7 +49,13 @@ const AddressCard = ({
 
         <button
           type="button"
-          onClick={() => address.id !== undefined && onDelete(address.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+
+            if (address.id !== undefined) {
+              onDelete(address.id);
+            }
+          }}
           className="px-4 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-50"
         >
           Delete
